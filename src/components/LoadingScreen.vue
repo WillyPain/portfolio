@@ -3,10 +3,13 @@ import gsap from 'gsap';
 import SplitText from 'gsap/SplitText'
 import { onMounted, reactive } from 'vue'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { AmbientLight, AnimationMixer, ClampToEdgeWrapping, Clock, DirectionalLight, InterpolateDiscrete, InterpolateSmooth, Mesh, NearestFilter, Object3D, PerspectiveCamera, Scene, SpotLight, WebGLRenderer } from 'three';
+import { AmbientLight, AnimationMixer, ClampToEdgeWrapping, Clock, DirectionalLight, InterpolateDiscrete, Mesh, NearestFilter, Object3D, PerspectiveCamera, Scene, SpotLight, WebGLRenderer } from 'three';
 import ShaderSlider from './ShaderSlider.vue';
 import AnimationSlider from './AnimationSlider.vue';
 import InputPanel from './InputPanel.vue';
+import ps1VertexShader from '@/assets/shaders/ps1-vertex-shader.glsl?raw';
+import ps1FragmentShader from '@/assets/shaders/ps1-fragment-shader.glsl?raw';
+import modelUrl from '@/assets/models/typing.glb?url';
 
 gsap.registerPlugin(SplitText);
 
@@ -46,12 +49,8 @@ const cameraHeight = 1;
 const ambientLightColor = 0xffffff;
 const ambientLightIntensity = 5;
 
-const shaderPath = '/ps1.glsl';
-const modelPath = '/typing.glb'
-
 async function loadBackflip() {
   if (loaded == true) return;
-  const [vertexShader, fragmentShader] = (await fetch(shaderPath).then(r => r.text())).split('//FRAGMENT SHADER');
   loaded = true;
   const loader = new GLTFLoader();
   const scene = new Scene();
@@ -73,7 +72,7 @@ async function loadBackflip() {
   let mixer: AnimationMixer;
 
 
-  loader.load(modelPath, function (gltf) {
+  loader.load(modelUrl, function (gltf) {
     scene.add(gltf.scene);
 
     // add ps1 style affine shader to all materials
@@ -98,8 +97,8 @@ async function loadBackflip() {
             shader.uniforms[key] = (uniforms as any)[key];
           }
 
-          shader.vertexShader = vertexShader;
-          shader.fragmentShader = fragmentShader;
+          shader.vertexShader = ps1VertexShader;
+          shader.fragmentShader = ps1FragmentShader;
 
           // Keeping a list of shaders so we can update the materials
           shaders.push(shader);
@@ -107,7 +106,7 @@ async function loadBackflip() {
       }
     });
 
-    gltf.animations[0].tracks[0].setInterpolation(InterpolateSmooth);
+    gltf.animations[0].tracks[0].setInterpolation(InterpolateDiscrete);
     mixer = new AnimationMixer(gltf.scene);
     gltf.animations.forEach((clip) => {
     mixer.clipAction(clip).play();
