@@ -21,6 +21,11 @@
       <input type="checkbox" v-model.bool="enableRotation" @input="update"/>
     </div>
   </label>
+
+  <label>
+    Camera Distance: {{ cameraDistance.toFixed(1) }}
+    <input type="range" min="0.5" max="4" step="0.1" v-model.number="cameraDistance" @input="update"/>
+  </label>
 </template>
 
 <script setup lang="ts">
@@ -34,6 +39,7 @@ const props = defineProps<{
         enablePlayback: boolean;
         rotationSpeed: number;
         enableRotation: boolean;
+        cameraDistance: number;
     }
 }>();
 
@@ -54,6 +60,7 @@ const playbackSpeed = ref(settings.playbackSpeed);
 const enablePlayback = ref(settings.enableRotation);
 const rotationSpeed = ref(settings.rotationSpeed);
 const enableRotation = ref(settings.enableRotation);
+const cameraDistance = ref(settings.cameraDistance);
 
 watch(framerate, (val) => {
   settings.framerate = val;
@@ -73,6 +80,10 @@ watch(rotationSpeed, (val) => {
 
 watch(enableRotation, (val) => {
   settings.enableRotation = val;
+});
+
+watch(cameraDistance, (val) => {
+  settings.cameraDistance = val;
 });
 
 </script>

@@ -47,8 +47,7 @@ async function configureSplitText() {
 }
 
 const cameraFov = 55;
-const cameraDist = 2;
-const cameraHeight = 1;
+const cameraHeight = 0.7;
 
 const ambientLightColor = 0xffffff;
 const ambientLightIntensity = 5;
@@ -58,7 +57,7 @@ async function loadBackflip() {
   const loader = new GLTFLoader();
   const scene = new Scene();
   const camera = new PerspectiveCamera(cameraFov, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = cameraDist;
+  camera.position.z = animationSettings.cameraDistance;
   camera.position.y = cameraHeight;
 
   const pivot = new Object3D();
@@ -143,6 +142,7 @@ async function loadBackflip() {
     if (animationSettings.enableRotation) {
       pivot.rotation.y += 0.005 * animationSettings.rotationSpeed;
     }
+    camera.position.z = animationSettings.cameraDistance;
   }
   
   const light = new DirectionalLight(0xffffff, 3);
@@ -157,7 +157,8 @@ const animationSettings = reactive({
   playbackSpeed: 1,
   enablePlayback: true,
   rotationSpeed: 0.5,
-  enableRotation: true
+  enableRotation: true,
+  cameraDistance: 3
 });
 
 let shaders: any[] = [];
@@ -224,8 +225,8 @@ const uniforms = reactive({
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: -1;
   overflow: hidden;
+  pointer-events: none;
 }
 #canvas-container canvas {
   width: 100%;
