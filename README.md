@@ -32,3 +32,9 @@
 ## https://www.bettinasosa.com/
 - beautiful gsap split text
 - overall great layout and media use (img/video)
+
+## https://adrienlamy.fr/
+- i have no idea how he created this. super clean
+
+## https://romanliutikov.com/blog/ps1-style-graphics-in-threejs
+- Covers some details about implementing ps1 style shaders in threejs

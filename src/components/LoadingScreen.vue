@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import gsap from 'gsap';
 import SplitText from 'gsap/SplitText'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { AmbientLight, AnimationMixer, ClampToEdgeWrapping, Clock, DirectionalLight, InterpolateDiscrete, Mesh, NearestFilter, Object3D, PerspectiveCamera, Scene, SpotLight, WebGLRenderer } from 'three';
 import ShaderSlider from './ShaderSlider.vue';
@@ -10,6 +10,10 @@ import InputPanel from './InputPanel.vue';
 import ps1VertexShader from '@/assets/shaders/ps1-vertex-shader.glsl?raw';
 import ps1FragmentShader from '@/assets/shaders/ps1-fragment-shader.glsl?raw';
 import modelUrl from '@/assets/models/typing.glb?url';
+
+
+//TODO: need to find a better way to add multiple canvases when reloading during dev
+var loaded = ref(false);
 
 gsap.registerPlugin(SplitText);
 
@@ -50,8 +54,7 @@ const ambientLightColor = 0xffffff;
 const ambientLightIntensity = 5;
 
 async function loadBackflip() {
-  if (loaded == true) return;
-  loaded = true;
+  if (loaded.value === true) return;
   const loader = new GLTFLoader();
   const scene = new Scene();
   const camera = new PerspectiveCamera(cameraFov, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -73,6 +76,7 @@ async function loadBackflip() {
 
 
   loader.load(modelUrl, function (gltf) {
+    loaded.value = true;
     scene.add(gltf.scene);
 
     // add ps1 style affine shader to all materials
@@ -146,9 +150,6 @@ async function loadBackflip() {
   scene.add(light);
 }
 
-//TODO: need to find a better way to add multiple canvases when reloading during dev
-var loaded = false;
-
 // PROPS
 //todo: create types for these props
 const animationSettings = reactive({
@@ -182,7 +183,7 @@ const uniforms = reactive({
 </script>
 
 <template>
-  <div class="flex flex-col h-full justify-end">
+  <div v-show="loaded" class="flex flex-col h-full justify-end">
     <p class="split">"Loading . . ."</p>
     <div class="w-full p-5 flex flex-row justify-between">
       <ShaderSlider :uniforms="uniforms" @updateUniforms="onUniformsChanged"/>
