@@ -5,7 +5,6 @@
 </template>
 
 <style scoped>
-
 :deep(label) {
   display: block;
   margin-bottom: 1rem;

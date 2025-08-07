@@ -3,52 +3,84 @@
 
   <label>
     Framerate: {{ framerate.toFixed(0) }}
-    <input type="range" min="1" max="200" step="1" v-model.number="framerate" @input="update"/>
+    <input
+      v-model.number="framerate"
+      type="range"
+      min="1"
+      max="200"
+      step="1"
+      @input="update"
+    />
   </label>
 
   <label>
     Playback Speed: {{ playbackSpeed.toFixed(1) }}
     <div class="flex flex-row justify-items-center">
-      <input class="mr-1" type="range" min="-3" max="3" step="0.1" v-model.number="playbackSpeed" @input="update" :disabled="!enablePlayback"/>
-      <input type="checkbox" v-model.bool="enablePlayback" @input="update"/>
+      <input
+        v-model.number="playbackSpeed"
+        class="mr-1"
+        type="range"
+        min="-3"
+        max="3"
+        step="0.1"
+        :disabled="!enablePlayback"
+        @input="update"
+      />
+      <input v-model="enablePlayback" type="checkbox" @input="update" />
     </div>
   </label>
 
   <label>
     Rotation Speed: {{ rotationSpeed.toFixed(1) }}
     <div class="flex flex-row justify-items-center">
-      <input class="mr-1" type="range" min="-3" max="3" step="0.1" v-model.number="rotationSpeed" @input="update" :disabled="!enableRotation"/>
-      <input type="checkbox" v-model.bool="enableRotation" @input="update"/>
+      <input
+        v-model.number="rotationSpeed"
+        class="mr-1"
+        type="range"
+        min="-3"
+        max="3"
+        step="0.1"
+        :disabled="!enableRotation"
+        @input="update"
+      />
+      <input v-model="enableRotation" type="checkbox" @input="update" />
     </div>
   </label>
 
   <label>
     Camera Distance: {{ cameraDistance.toFixed(1) }}
-    <input type="range" min="0.5" max="4" step="0.1" v-model.number="cameraDistance" @input="update"/>
+    <input
+      v-model.number="cameraDistance"
+      type="range"
+      min="0.5"
+      max="4"
+      step="0.1"
+      @input="update"
+    />
   </label>
 </template>
 
 <script setup lang="ts">
-import { watch, ref } from 'vue';
+import { watch, ref } from "vue";
 
 // Props: shader uniforms object
 const props = defineProps<{
-    settings: {
-        framerate: number;
-        playbackSpeed: number;
-        enablePlayback: boolean;
-        rotationSpeed: number;
-        enableRotation: boolean;
-        cameraDistance: number;
-    }
+  settings: {
+    framerate: number;
+    playbackSpeed: number;
+    enablePlayback: boolean;
+    rotationSpeed: number;
+    enableRotation: boolean;
+    cameraDistance: number;
+  };
 }>();
 
 const emit = defineEmits<{
-  (e: 'updateAnimationSettings', newUniforms: typeof props.settings): void;
+  (e: "updateAnimationSettings", newUniforms: typeof props.settings): void;
 }>();
 
 function update() {
-  emit('updateAnimationSettings', props.settings);
+  emit("updateAnimationSettings", props.settings);
 }
 
 // On component mount sync initial values with shader
@@ -85,7 +117,6 @@ watch(enableRotation, (val) => {
 watch(cameraDistance, (val) => {
   settings.cameraDistance = val;
 });
-
 </script>
 
 <style scoped>

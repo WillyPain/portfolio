@@ -10,7 +10,7 @@ onMounted(async () => {
 });
 
 async function configureSplitText() {
-  let split = SplitText.create(".split", {
+  const split = SplitText.create(".split", {
     type: "chars",
     charsClassClass: "char",
   });

@@ -3,31 +3,14 @@
   <div id="canvas-container"></div>
   <div>{{ will.loaded }}</div>
 
-  <ShaderSlider v-show="loadedRef"
+  <ShaderSlider
+v-show="loadedRef"
     :uniforms="uniforms" 
-    @updateUniforms="will.onUniformsChanged"/>
+    @update-uniforms="will.onUniformsChanged"/>
   <!-- <InputPanel>
     <AnimationSlider :settings="animationSettings"/>
   </InputPanel> -->
 </template>
-
-<style>
-/* Full viewport canavs and place it behind UI */
-#canvas-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  pointer-events: none;
-}
-#canvas-container canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-</style>
 
 <script setup lang="ts">
 import { SpinningCamera } from '@/scene/SpinningCamera';
@@ -59,3 +42,21 @@ onUnmounted(() => {
 });
 
 </script>
+
+<style>
+/* Full viewport canavs and place it behind UI */
+#canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  pointer-events: none;
+}
+#canvas-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+</style>

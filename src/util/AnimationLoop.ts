@@ -55,7 +55,7 @@ export class AnimationLoop {
   }
 
   private update() {
-    var delta = this._clock.getDelta();
+    const delta = this._clock.getDelta();
     this._handlers.forEach(h => h.update(delta));
     const camera = CameraController.MainCamera;
     if (camera) {
