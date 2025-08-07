@@ -1,5 +1,5 @@
 <template>
-  <InputPanel>
+  <Panel>
     <h3>Shader Uniform Controls</h3>
     <label>
       Vertex Snap: {{ vertexSnap.toFixed(4) }}
@@ -28,12 +28,12 @@
       Pixelation: {{ pixelation }}
       <input type="range" min="1" max="256" step="1" v-model.number="pixelation" @input="update"/>
     </label>
-  </InputPanel>
+  </Panel>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from 'vue';
-import InputPanel from './InputPanel.vue';
+import Panel from './Panel.vue';
 
 // Props: shader uniforms object
 const props = defineProps<{

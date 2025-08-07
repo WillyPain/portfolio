@@ -38,3 +38,9 @@
 
 ## https://romanliutikov.com/blog/ps1-style-graphics-in-threejs
 - Covers some details about implementing ps1 style shaders in threejs
+
+## https://threejs-journey.com/lessons/modified-materials
+- This guy seems to have some pretty good lessons
+
+## https://github.com/mattdesl/threejs-app/tree/master/src/webgl
+- Example threejs project setup
