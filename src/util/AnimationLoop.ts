@@ -19,7 +19,7 @@ export class AnimationSettings {
 
 export class AnimationLoop {
   private constructor() {
-    this._renderer.setSize(640, 480);
+    this._renderer.setSize(640, 480, false);
     this._renderer.setClearColor(0x000000, 0);
   }
 
@@ -34,7 +34,7 @@ export class AnimationLoop {
       this._instance = new AnimationLoop();
     }
     return this._instance;
-  };
+  }
 
   public static get Renderer(): WebGLRenderer {
     return this.Instance._renderer;
@@ -50,13 +50,13 @@ export class AnimationLoop {
 
   private _start() {
     this._clock.start();
-    this._handlers.forEach(h => h.init(this._scene));
+    this._handlers.forEach((h) => h.init(this._scene));
     this._renderer.setAnimationLoop(this.update.bind(this));
   }
 
   private update() {
     const delta = this._clock.getDelta();
-    this._handlers.forEach(h => h.update(delta));
+    this._handlers.forEach((h) => h.update(delta));
     const camera = CameraController.MainCamera;
     if (camera) {
       this._renderer.render(this._scene, camera);
@@ -68,7 +68,7 @@ export class AnimationLoop {
   }
 
   private _stop() {
-    this._handlers.forEach(h => h.cleanup(this._scene));
+    this._handlers.forEach((h) => h.cleanup(this._scene));
     this._handlers = [];
   }
 }

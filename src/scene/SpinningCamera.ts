@@ -6,15 +6,14 @@ export class CameraSettings {
   target?: Object3D = new Object3D();
 
   fov = 55;
-  height = 0.5;
+  height = 5;
   distance = 3;
 
-  rotationSpeed = 1;
+  rotationSpeed = 0.5;
   enableRotation = true;
 }
 
 export class SpinningCamera implements SceneThing {
-
   settings = new CameraSettings();
   camera?: Camera;
 
@@ -22,8 +21,10 @@ export class SpinningCamera implements SceneThing {
     this.camera = new PerspectiveCamera(this.settings.fov, 1, 0.1, 2000);
     this.camera.position.y = this.settings.height;
     this.camera.position.z = this.settings.distance;
+    this.camera.rotateX(-0.7);
 
     this.settings.target = new Object3D();
+    this.settings.target.rotateY(4);
     scene.add(this.settings.target);
 
     this.settings.target.add(this.camera);

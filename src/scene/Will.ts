@@ -1,6 +1,5 @@
 import type { SceneThing } from "@/util/AnimationLoop";
 import {
-  AmbientLight,
   AnimationMixer,
   ClampToEdgeWrapping,
   InterpolateDiscrete,
@@ -12,7 +11,7 @@ import {
 import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js";
 import ps1VertexShader from "@/assets/shaders/ps1-vertex-shader.glsl?raw";
 import ps1FragmentShader from "@/assets/shaders/ps1-fragment-shader.glsl?raw";
-import modelUrl from "@/assets/models/typing.glb?url";
+import modelUrl from "@/assets/models/backflip_2.glb?url";
 
 interface ThreeShader {
   vertexShader: string;
@@ -41,6 +40,8 @@ export class Will implements SceneThing {
 
   shaders: ThreeShader[] = [];
   public onUniformsChanged(newUniforms: Ps1ShaderUniforms) {
+    // sometimes its undefined idk
+    if (!this) return;
     for (const shader of this.shaders) {
       for (const key in newUniforms) {
         if (shader.uniforms[key]) {
@@ -58,7 +59,8 @@ export class Will implements SceneThing {
       (gltf) => {
         this.loaded = true;
         this.root = gltf;
-        gltf.scene.add(new AmbientLight(0xffffff, 8));
+        this.root.scene.position.z = -1;
+        this.root.scene.scale.addScalar(-0.2);
         scene.add(gltf.scene);
         // add ps1 style affine shader to all materials
         gltf.scene.traverse((child) => {
@@ -85,6 +87,7 @@ export class Will implements SceneThing {
               shader.fragmentShader = ps1FragmentShader;
 
               // Keeping a list of shaders so we can update the materials
+              console.log("apple");
               this.shaders.push(shader);
             };
           }
