@@ -1,5 +1,5 @@
 <template>
-  <Panel>
+  <input-panel>
     <h3>Shader Uniform Controls</h3>
     <label>
       Vertex Snap: {{ vertexSnap.toFixed(4) }}
@@ -65,12 +65,12 @@
         @input="update"
       />
     </label>
-  </Panel>
+  </input-panel>
 </template>
 
 <script setup lang="ts">
 import { watch, ref } from "vue";
-import Panel from "./InputPanel.vue";
+import InputPanel from "./InputPanel.vue";
 import type { Uniform } from "three";
 
 // Props: shader uniforms object
