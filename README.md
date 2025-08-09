@@ -59,3 +59,7 @@
 ## https://nvg8.io/
 
 - Love this style, would really suit susine.dev
+
+## https://lusion.co/
+
+- Awesome trasition from website into 3d canvas
