@@ -40,9 +40,18 @@ onMounted(() => {
   const container = document.getElementById("canvas-container");
   container?.appendChild(AnimationLoop.Renderer.domElement);
 
+  const stats = new Stats();
+  document.body.appendChild(stats.dom);
+
   container?.appendChild(AnimationLoop.CssRenderer.domElement);
   container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
+
   // AnimationLoop.Subscribe(spinningCamera);
+  AnimationLoop.Subscribe({
+    update: () => stats.update(),
+    init: () => null,
+    cleanup: () => null,
+  });
   AnimationLoop.Subscribe(rig);
   AnimationLoop.Subscribe(will);
   AnimationLoop.Subscribe(new SideWalk());
