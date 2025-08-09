@@ -40,6 +40,8 @@ onMounted(() => {
   const container = document.getElementById("canvas-container");
   container?.appendChild(AnimationLoop.Renderer.domElement);
 
+  container?.appendChild(AnimationLoop.CssRenderer.domElement);
+  container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
   // AnimationLoop.Subscribe(spinningCamera);
   AnimationLoop.Subscribe(rig);
   AnimationLoop.Subscribe(will);
