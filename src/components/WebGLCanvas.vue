@@ -48,26 +48,29 @@ onMounted(() => {
   AnimationLoop.Subscribe(new SideWalk());
   AnimationLoop.Start();
 
-  const c = document.querySelector(".scrollTarget");
-
   const count = rig.dummyPoints.length;
-  gsap.to(dummy, {
+  const tween = gsap.to(dummy, {
     t: count,
     scrollTrigger: {
       trigger: ".scrollTarget",
       start: "top top",
       end: "bottom 100%",
-      scrub: true,
+      scrub: 5,
     },
     onUpdate: () => {
       const index = Math.floor(dummy.t) % count;
       const nextIndex = (index + 1) % count;
       const alpha = (dummy.t % count) - index;
 
-      if (nextIndex == 1 && dummy.t > nextIndex && c) {
-        window.scrollTo(0, 0);
-        // index = 0;
-        // nextIndex = 0;
+      if (alpha > 0.999 && nextIndex == 0) {
+        // This is some forbidden magic but it somehow works
+        // Sets scroll back to top of container
+
+        tween.pause(0);
+        if (window) {
+          window.scrollTo(0, 0);
+        }
+
         return;
       }
 
