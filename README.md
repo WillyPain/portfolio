@@ -63,3 +63,9 @@
 ## https://lusion.co/
 
 - Awesome trasition from website into 3d canvas
+
+## https://github.com/henryjeff/portfolio-website/blob/master/src/Application/UI/components/LoadingScreen.tsx#L290
+
+- Example of how to achieve css3d element occulsion
+- overall clean project setup similar to what I'm going for
+- Like... this is an extremely good example

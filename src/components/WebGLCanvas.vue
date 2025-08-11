@@ -23,8 +23,14 @@ import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { SideWalk } from "@/scene/SideWalk";
 import { RigCamera } from "@/scene/RigCamera";
 import gsap from "gsap";
+import pcUrl from "@/assets/models/pc.glb?url";
+import { Glb } from "@/scene/Glb";
+import Stats from "three/examples/jsm/libs/stats.module.js";
 
 // const spinningCamera = new SpinningCamera();
+// Load in pc
+const pc = new Glb(pcUrl, 2, 0.2, -3);
+pc.root.rotateY(2.3);
 
 const will = new Will();
 const loadedRef = ref(() => will.loaded);
@@ -52,6 +58,7 @@ onMounted(() => {
     init: () => null,
     cleanup: () => null,
   });
+  AnimationLoop.Subscribe(pc);
   AnimationLoop.Subscribe(rig);
   AnimationLoop.Subscribe(will);
   AnimationLoop.Subscribe(new SideWalk());
