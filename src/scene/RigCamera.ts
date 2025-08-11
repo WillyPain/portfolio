@@ -22,25 +22,30 @@ export class RigCamera implements SceneThing {
     const cam = new PerspectiveCamera(55, innerWidth / innerHeight, 0.1, 1000);
     CameraController.MainCamera = cam;
 
+    const addPoint = (x: number, y: number, z: number) => {
+      const newPoint = new Object3D();
+      newPoint.position.set(x, y, z);
+      this.dummyPoints.push(newPoint);
+    };
+
+    addPoint(3, 1, -4);
+    addPoint(5, 4, -2);
+    addPoint(3, 6, 0.5);
+    addPoint(0, 7, 0);
+    addPoint(-4, 1, -4);
+
     const sphere = new SphereGeometry(0.1, 4, 4);
     const mat = new MeshBasicMaterial({ color: 0xccffcc });
-    this.points = new InstancedMesh(sphere, mat, 5);
+    this.points = new InstancedMesh(sphere, mat, this.dummyPoints.length);
     this.points.instanceMatrix.setUsage(DynamicDrawUsage);
 
-    for (let ii = 0; ii < 5; ii++) {
-      this.dummyPoints.push(new Object3D());
-    }
-    this.dummyPoints[0].position.set(4, 1, -4);
-    this.dummyPoints[1].position.set(4, 0, 0);
-    this.dummyPoints[2].position.set(0, 5, 0.8);
-    this.dummyPoints[3].position.set(-4, 2, 0);
-    this.dummyPoints[4].position.set(-4, 0, -4);
-
-    for (let ii = 0; ii < 5; ii++) {
+    for (let ii = 0; ii < this.dummyPoints.length; ii++) {
       this.dummyPoints[ii].updateMatrix();
       this.points.setMatrixAt(ii, this.dummyPoints[ii].matrix);
     }
 
+    const p1 = this.dummyPoints[0].position;
+    this.cameraMount.position.set(p1.x, p1.y, p1.z);
     this.cameraMount.add(cam);
     this.root.add(this.cameraMount);
     this.root.add(this.points);
@@ -48,18 +53,12 @@ export class RigCamera implements SceneThing {
   }
 
   accumulator: number = 0;
-  update(delta: number): void {
+  update(): void {
     const target = this.lookAtTarget?.();
     if (target?.position) {
       const t = target.position;
       CameraController.MainCamera?.lookAt(new Vector3(t.x, t.y, t.z));
     }
-    this.accumulator += delta;
-    for (let ii = 0; ii < 5; ii++) {
-      this.dummyPoints[ii].updateMatrix();
-      this.points!.setMatrixAt(ii, this.dummyPoints[ii].matrix);
-    }
-    this.points!.instanceMatrix.needsUpdate = true;
   }
 
   cleanup(scene: Scene): void {
