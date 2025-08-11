@@ -82,9 +82,15 @@ button:focus-visible {
 
 @font-face {
   font-family: 'Unispace';
-  src: url('/fonts/unispace.woff2') format('woff2'),
-       url('/fonts/unispace.woff') format('woff'),
-       url('/fonts/unispace.ttf') format('truetype');
+  src: url('./assets/font/unispace/unispace-regular.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'VT323 Regular';
+  src: url('./assets/font/VT323/VT323-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -92,4 +98,11 @@ button:focus-visible {
 
 body {
   font-family: 'Unispace', monospace;
+}
+
+.ocr {
+  font-family: 'VT323 Regular', monospace;
+  font-style: normal;
+  font-weight: 400;
+  background-color: #080919;
 }
