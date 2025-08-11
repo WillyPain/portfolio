@@ -20,19 +20,25 @@ export class AnimationSettings {
 
 export class AnimationLoop {
   private constructor() {
+    this._miniRenderer.setSize(256, 224);
+    this._miniRenderer.domElement.style.backfaceVisibility = "hidden";
+    this._miniRenderer.domElement.style.transformStyle = "preserve-3d";
+
     this._renderer.setSize(640, 480, false);
     this._renderer.setClearColor(0x000000, 0);
 
     this._cssRenderer.setSize(window.innerWidth, window.innerHeight);
     this._cssRenderer.domElement.style.position = "absolute";
     this._cssRenderer.domElement.style.top = "0";
+    this._cssRenderer.domElement.style.zIndex = "-1";
 
-    this._cssRenderer.setSize(window.innerWidth, window.innerHeight);
-    this._cssRenderer.domElement.style.position = "absolute";
-    this._cssRenderer.domElement.style.top = "0";
+    this._css2dRenderer.setSize(window.innerWidth, window.innerHeight);
+    this._css2dRenderer.domElement.style.position = "absolute";
+    this._css2dRenderer.domElement.style.top = "0";
   }
 
   private _scene: Scene = new Scene();
+  private _miniRenderer: WebGLRenderer = new WebGLRenderer();
   private _renderer: WebGLRenderer = new WebGLRenderer();
   private _cssRenderer: CSS3DRenderer = new CSS3DRenderer();
   private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
@@ -45,6 +51,10 @@ export class AnimationLoop {
       this._instance = new AnimationLoop();
     }
     return this._instance;
+  }
+
+  public static get MiniRenderer(): WebGLRenderer {
+    return this.Instance._miniRenderer;
   }
 
   public static get Renderer(): WebGLRenderer {
@@ -78,6 +88,7 @@ export class AnimationLoop {
     this._handlers.forEach((h) => h.update(delta));
     const camera = CameraController.MainCamera;
     if (camera) {
+      this._miniRenderer.render(this._scene, camera);
       this._renderer.render(this._scene, camera);
       this._cssRenderer.render(this._scene, camera);
       this._css2dRenderer.render(this._scene, camera);

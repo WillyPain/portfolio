@@ -26,11 +26,17 @@ import gsap from "gsap";
 import pcUrl from "@/assets/models/pc.glb?url";
 import { Glb } from "@/scene/Glb";
 import Stats from "three/examples/jsm/libs/stats.module.js";
+import { VirtualCanvas } from "@/scene/VirtualCanvas";
+import { Euler } from "three";
 
-// const spinningCamera = new SpinningCamera();
+const pcX = 2,
+  pcY = 0.2,
+  pcZ = -3,
+  pcRY = 2.3;
+
 // Load in pc
-const pc = new Glb(pcUrl, 2, 0.2, -3);
-pc.root.rotateY(2.3);
+const pc = new Glb(pcUrl, pcX, pcY, pcZ);
+pc.root.rotateY(pcRY);
 
 const will = new Will();
 const loadedRef = ref(() => will.loaded);
@@ -52,12 +58,23 @@ onMounted(() => {
   container?.appendChild(AnimationLoop.CssRenderer.domElement);
   container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
 
+  // virtual canvas
+  const vcanvas = new VirtualCanvas(
+    AnimationLoop.MiniRenderer.domElement,
+    pcX,
+    pcY,
+    pcZ,
+    new Euler(0, pcRY, 0),
+    0.001
+  );
+
   // AnimationLoop.Subscribe(spinningCamera);
   AnimationLoop.Subscribe({
     update: () => stats.update(),
     init: () => null,
     cleanup: () => null,
   });
+  AnimationLoop.Subscribe(vcanvas);
   AnimationLoop.Subscribe(pc);
   AnimationLoop.Subscribe(rig);
   AnimationLoop.Subscribe(will);
