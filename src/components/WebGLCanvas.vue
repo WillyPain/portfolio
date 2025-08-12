@@ -1,7 +1,9 @@
 <template>
   <div id="canvas-container"></div>
 
-  <scramble-text :text="`hello`"> </scramble-text>
+  <scramble-text-label :text="`Welcome to my meme page.`">
+  </scramble-text-label>
+  <scramble-text-label :text="`mandi yuk`"> </scramble-text-label>
 
   <ShaderSlider
     v-show="loadedRef"
@@ -14,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import ScrambleText from "./ScrambleText.vue";
+import ScrambleTextLabel from "./ScrambleTextLabel.vue";
 import { SpinningCamera } from "@/scene/SpinningCamera";
 import ShaderSlider from "./ShaderSlider.vue";
 import { Will } from "@/scene/Will";
