@@ -101,8 +101,8 @@ body {
 }
 
 .ocr {
-  font-family: 'VT323 Regular', monospace;
+  font-family: 'Fixedsys', 'VT323 Regular', monospace;
   font-style: normal;
   font-weight: 400;
-  background-color: #080919;
+  background-color: #0240ff;
 }

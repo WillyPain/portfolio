@@ -5,10 +5,11 @@ import {
   InterpolateDiscrete,
   Mesh,
   NearestFilter,
+  Object3D,
   Uniform,
   type Scene,
 } from "three";
-import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js";
+import { CSS2DObject, GLTFLoader } from "three/examples/jsm/Addons.js";
 import ps1VertexShader from "@/assets/shaders/ps1-vertex-shader.glsl?raw";
 import ps1FragmentShader from "@/assets/shaders/ps1-fragment-shader.glsl?raw";
 import modelUrl from "@/assets/models/backflip_2.glb?url";
@@ -34,7 +35,7 @@ class Ps1ShaderUniforms {
 export class Will implements SceneThing {
   loaded: boolean = false;
   mixer: AnimationMixer | undefined;
-  root: GLTF | undefined;
+  root: Object3D = new Object3D();
 
   public uniforms = new Ps1ShaderUniforms();
 
@@ -51,19 +52,42 @@ export class Will implements SceneThing {
     }
   }
 
+  getTag(text: string): CSS2DObject {
+    const labelDiv = document.createElement("div");
+    labelDiv.textContent = text;
+    labelDiv.style.color = "white";
+    labelDiv.style.fontSize = "1.5rem";
+    labelDiv.className = "ocr";
+
+    return new CSS2DObject(labelDiv);
+  }
+
   init(scene: Scene): void {
+    const label = this.getTag("HEART");
+    const label2 = this.getTag("LEFT FOOT");
+    const label3 = this.getTag("RIGHT FOOT");
+
     console.log("Will initialized.");
     const loader = new GLTFLoader();
     loader.load(
       modelUrl,
       (gltf) => {
         this.loaded = true;
-        this.root = gltf;
-        this.root.scene.position.z = -1;
-        this.root.scene.scale.addScalar(-0.2);
-        scene.add(gltf.scene);
+        this.root.add(gltf.scene);
+        this.root.position.z = -1;
+        this.root.scale.addScalar(-0.2);
+        scene.add(this.root);
         // add ps1 style affine shader to all materials
         gltf.scene.traverse((child) => {
+          if (child.name === "mixamorigSpine1") {
+            child.add(label);
+          }
+          if (child.name === "mixamorigLeftFoot") {
+            child.add(label2);
+          }
+          if (child.name === "mixamorigRightFoot") {
+            child.add(label3);
+          }
           if (child instanceof Mesh) {
             const t = child.material.map;
             if (t == null) return;
@@ -121,7 +145,7 @@ export class Will implements SceneThing {
   cleanup(scene: Scene): void {
     console.log("Will cleanup.");
     if (this.root) {
-      scene.remove(this.root.scene);
+      scene.remove(this.root);
     }
   }
 }

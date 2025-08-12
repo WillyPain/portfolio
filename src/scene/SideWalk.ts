@@ -35,7 +35,7 @@ class Ps1ShaderUniforms {
   uColorDepth = new Uniform(16.0);
   uDithering = new Uniform(0.2);
   uAffineIntensity = new Uniform(1);
-  uPixelation = new Uniform(256);
+  uPixelation = new Uniform(400);
 }
 
 export class SideWalk implements SceneThing {

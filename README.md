@@ -69,3 +69,12 @@
 - Example of how to achieve css3d element occulsion
 - overall clean project setup similar to what I'm going for
 - Like... this is an extremely good example
+
+## https://thibaud.film/
+
+- amazing scramble text (gsap splittext)
+- awesome section locked by secret password
+
+## https://codepen.io/ZachSaucier/pen/QwWVaMo
+
+- Officail GSAP example on split text scrambling

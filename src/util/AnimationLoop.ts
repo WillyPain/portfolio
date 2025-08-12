@@ -21,8 +21,6 @@ export class AnimationSettings {
 export class AnimationLoop {
   private constructor() {
     this._miniRenderer.setSize(256, 224);
-    this._miniRenderer.domElement.style.backfaceVisibility = "hidden";
-    this._miniRenderer.domElement.style.transformStyle = "preserve-3d";
 
     this._renderer.setSize(640, 480, false);
     this._renderer.setClearColor(0x000000, 0);
@@ -81,6 +79,9 @@ export class AnimationLoop {
     this._clock.start();
     this._handlers.forEach((h) => h.init(this._scene));
     this._renderer.setAnimationLoop(this.update.bind(this));
+
+    //once off render
+    this.update();
   }
 
   private update() {

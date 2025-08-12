@@ -2,19 +2,19 @@
   <div class="scrollTarget"></div>
 
   <div id="canvas-container"></div>
-  <ShaderSlider
-    v-show="loadedRef"
-    :uniforms="uniforms"
-    @update-uniforms="will.onUniformsChanged"
-  />
+  <div class="flex flex-row-reverse">
+    <ShaderSlider
+      v-show="loadedRef"
+      id="shader-controls"
+      :uniforms="uniforms"
+      @update-uniforms="will.onUniformsChanged"
+    />
+  </div>
+
   <LoadingText></LoadingText>
-  <!-- <InputPanel>
-    <AnimationSlider :settings="animationSettings"/>
-  </InputPanel> -->
 </template>
 
 <script setup lang="ts">
-// import { SpinningCamera } from "@/scene/SpinningCamera";
 import ShaderSlider from "./ShaderSlider.vue";
 import LoadingText from "./LoadingText.vue";
 import { Will } from "@/scene/Will";
@@ -28,6 +28,7 @@ import { Glb } from "@/scene/Glb";
 import Stats from "three/examples/jsm/libs/stats.module.js";
 import { VirtualCanvas } from "@/scene/VirtualCanvas";
 import { Euler } from "three";
+import SplitText from "gsap/SplitText";
 
 const pcX = 2,
   pcY = 0.2,
@@ -44,7 +45,37 @@ const uniforms = reactive(will.uniforms);
 
 const rig = new RigCamera();
 
-rig.lookAtTarget = () => will.root?.scene;
+// thank u gpt
+const letterToSpecialChars: Map<string, string[]> = new Map([
+  ["A", ["@", "4", "▲", "∆", "α", "Å", "λ"]],
+  ["B", ["8", "3", "ß", "Þ", "β"]],
+  ["C", ["(", "©", "¢", "<", "Ƈ", "Ç"]],
+  ["D", ["Ð", "∂", "Ɗ"]],
+  ["E", ["3", "€", "£", "Σ", "Ǝ"]],
+  ["F", ["ƒ", "ϝ"]],
+  ["G", ["6", "9", "&", "ɢ"]],
+  ["H", ["#", "ħ", "ɦ"]],
+  ["I", ["!", "1", "|", "l", "ɩ"]],
+  ["J", ["_|", "¿", "ʝ"]],
+  ["K", ["|<", "|{", "κ", "к"]],
+  ["L", ["1", "|_", "£", "∟"]],
+  ["M", ["/\\/\\", "/V", "^^", "ɱ"]],
+  ["N", ["ɲ"]],
+  ["O", ["0", "°", "ø", "@", "."]],
+  ["P", ["|*", "|>", "ρ", "þ", "ϱ"]],
+  ["Q", ["0,", "9", "(,)", "ʠ"]],
+  ["R", ["®", "ʀ", "-"]],
+  ["S", ["$", "5", "§", "ś", "š"]],
+  ["T", ["7", "+", "†", "‡"]],
+  ["U", ["µ", "ʉ"]],
+  ["V", ["ʋ", "@", "^"]],
+  ["W", ["v", "ɯ"]],
+  ["X", ["×", "ẋ", "χ"]],
+  ["Y", ["`", "¥", "ɏ"]],
+  ["Z", ["2", "7", "≥", "ƶ"]],
+]);
+
+rig.lookAtTarget = () => will.root;
 
 const dummy = { t: 0 }; // t will go from 0 to cameraPositions.length - 1
 onMounted(() => {
@@ -57,6 +88,47 @@ onMounted(() => {
 
   container?.appendChild(AnimationLoop.CssRenderer.domElement);
   container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
+
+  // shader control animations
+  gsap.from("#shader-controls", {
+    y: -100,
+    opacity: 0,
+    duration: 0.5,
+    ease: "power2.out",
+    scrollTrigger: {
+      trigger: ".scrollTarget",
+      start: "top 1%",
+      end: "top -5%",
+      toggleActions: "play reverse play reverse",
+    },
+  });
+
+  const inputs =
+    document.querySelectorAll<HTMLInputElement>(".input-panel input");
+  inputs.forEach((i) => {
+    gsap.fromTo(
+      i,
+      {
+        value: 0,
+        opacity: 0,
+      },
+      {
+        value: i.value,
+        opacity: 1,
+        duration: 0.1,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: ".scrollTarget",
+          start: "top 1%",
+          end: "top -5%",
+          toggleActions: "play reverse play reverse",
+        },
+        stagger: {
+          from: "random",
+        },
+      }
+    );
+  });
 
   // virtual canvas
   const vcanvas = new VirtualCanvas(
@@ -81,6 +153,42 @@ onMounted(() => {
   AnimationLoop.Subscribe(new SideWalk());
   AnimationLoop.Start();
 
+  setTimeout(() => {
+    const split = SplitText.create(".ocr", {
+      type: "chars",
+      charsClassClass: "char",
+    });
+
+    const getRandomLetter = (c: string): string => {
+      const char = c.toUpperCase();
+      const substituteLetters = letterToSpecialChars.get(char);
+      if (substituteLetters) {
+        const r = Math.floor(Math.random() * substituteLetters.length);
+        return substituteLetters[r];
+      }
+      return "#";
+    };
+
+    split.chars.forEach((c) => {
+      const character = c.textContent;
+      const scrambleEffect = () => {
+        if (!gsap.isTweening(c)) {
+          gsap.from(c, {
+            overwrite: true,
+            duration: 1,
+            scrambleText: {
+              text: getRandomLetter(character ?? "A"),
+              speed: 3,
+              chars: "upperAndLowerCase",
+            },
+          });
+        }
+      };
+
+      c.addEventListener("mouseenter", scrambleEffect);
+    });
+  }, 1000);
+
   const count = rig.dummyPoints.length;
   const tween = gsap.to(dummy, {
     t: count,
@@ -95,10 +203,9 @@ onMounted(() => {
       const nextIndex = (index + 1) % count;
       const alpha = (dummy.t % count) - index;
 
-      if (alpha > 0.999 && nextIndex == 0) {
+      if (alpha > 0.9999 && nextIndex == 0) {
         // This is some forbidden magic but it somehow works
         // Sets scroll back to top of container
-
         tween.pause(0);
         if (window) {
           window.scrollTo(0, 0);
@@ -133,7 +240,6 @@ onUnmounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  pointer-events: none;
 }
 #canvas-container canvas {
   width: 100%;
