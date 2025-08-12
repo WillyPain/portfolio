@@ -1,23 +1,23 @@
 <template>
-  
   <div id="canvas-container"></div>
   <div>{{ will.loaded }}</div>
 
   <ShaderSlider
-v-show="loadedRef"
-    :uniforms="uniforms" 
-    @update-uniforms="will.onUniformsChanged"/>
+    v-show="loadedRef"
+    :uniforms="uniforms"
+    @update-uniforms="will.onUniformsChanged"
+  />
   <!-- <InputPanel>
     <AnimationSlider :settings="animationSettings"/>
   </InputPanel> -->
 </template>
 
 <script setup lang="ts">
-import { SpinningCamera } from '@/scene/SpinningCamera';
-import ShaderSlider from './ShaderSlider.vue';
-import { Will } from '@/scene/Will';
-import { AnimationLoop } from '@/util/AnimationLoop';
-import { onMounted, onUnmounted, reactive, ref } from 'vue';
+import { SpinningCamera } from "@/scene/SpinningCamera";
+import ShaderSlider from "./ShaderSlider.vue";
+import { Will } from "@/scene/Will";
+import { AnimationLoop } from "@/util/AnimationLoop";
+import { onMounted, onUnmounted, reactive, ref } from "vue";
 
 const spinningCamera = new SpinningCamera();
 
@@ -26,9 +26,10 @@ const loadedRef = ref(() => will.loaded);
 const uniforms = reactive(will.uniforms);
 
 onMounted(() => {
-  console.log("Refreshed");
-  const container = document.getElementById('canvas-container');
+  const container = document.getElementById("canvas-container");
+  container?.appendChild(AnimationLoop.Css3dRenderer.domElement);
   container?.appendChild(AnimationLoop.Renderer.domElement);
+  container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
 
   AnimationLoop.Subscribe(spinningCamera);
   AnimationLoop.Subscribe(will);
@@ -36,11 +37,8 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
-  console.log("cleaning up.");
   AnimationLoop.Stop();
-  console.log("Squeaky clean.");
 });
-
 </script>
 
 <style>

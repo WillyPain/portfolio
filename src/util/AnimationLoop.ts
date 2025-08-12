@@ -23,10 +23,11 @@ export class AnimationLoop {
     this._renderer.setSize(640, 480, false);
     this._renderer.setClearColor(0x000000, 0);
 
-    this._cssRenderer.setSize(window.innerWidth, window.innerHeight);
-    this._cssRenderer.domElement.style.position = "absolute";
-    this._cssRenderer.domElement.style.top = "0";
-    this._cssRenderer.domElement.style.zIndex = "-1";
+    // Rendering this behind WebGL so we can achieve occlude effect
+    this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
+    this._css3dRenderer.domElement.style.position = "absolute";
+    this._css3dRenderer.domElement.style.top = "0";
+    this._css3dRenderer.domElement.style.zIndex = "-1";
 
     this._css2dRenderer.setSize(window.innerWidth, window.innerHeight);
     this._css2dRenderer.domElement.style.position = "absolute";
@@ -35,7 +36,7 @@ export class AnimationLoop {
 
   private _scene: Scene = new Scene();
   private _renderer: WebGLRenderer = new WebGLRenderer();
-  private _cssRenderer: CSS3DRenderer = new CSS3DRenderer();
+  private _css3dRenderer: CSS3DRenderer = new CSS3DRenderer();
   private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
   private _clock: Clock = new Clock();
   private _handlers: SceneThing[] = [];
@@ -52,8 +53,8 @@ export class AnimationLoop {
     return this.Instance._renderer;
   }
 
-  public static get CssRenderer(): CSS3DRenderer {
-    return this.Instance._cssRenderer;
+  public static get Css3dRenderer(): CSS3DRenderer {
+    return this.Instance._css3dRenderer;
   }
 
   public static get Css2dRenderer(): CSS2DRenderer {
@@ -83,7 +84,7 @@ export class AnimationLoop {
     const camera = CameraController.MainCamera;
     if (camera) {
       this._renderer.render(this._scene, camera);
-      this._cssRenderer.render(this._scene, camera);
+      this._css3dRenderer.render(this._scene, camera);
       this._css2dRenderer.render(this._scene, camera);
     }
   }

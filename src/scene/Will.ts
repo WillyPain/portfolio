@@ -41,6 +41,7 @@ export class Will implements SceneThing {
 
   shaders: ThreeShader[] = [];
   public onUniformsChanged(newUniforms: Ps1ShaderUniforms) {
+    if (!this) return;
     for (const shader of this.shaders) {
       for (const key in newUniforms) {
         if (shader.uniforms[key]) {
@@ -51,7 +52,6 @@ export class Will implements SceneThing {
   }
 
   init(scene: Scene): void {
-    console.log("Will initialized.");
     const loader = new GLTFLoader();
     loader.load(
       modelUrl,
@@ -116,7 +116,6 @@ export class Will implements SceneThing {
   }
 
   cleanup(scene: Scene): void {
-    console.log("Will cleanup.");
     if (this.root) {
       scene.remove(this.root.scene);
     }
