@@ -99,10 +99,3 @@ button:focus-visible {
 body {
   font-family: 'Unispace', monospace;
 }
-
-.ocr {
-  font-family: 'Fixedsys', 'VT323 Regular', monospace;
-  font-style: normal;
-  font-weight: 400;
-  background-color: #0240ff;
-}

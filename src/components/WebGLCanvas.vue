@@ -1,6 +1,7 @@
 <template>
   <div id="canvas-container"></div>
-  <div>{{ will.loaded }}</div>
+
+  <scramble-text :text="`hello`"> </scramble-text>
 
   <ShaderSlider
     v-show="loadedRef"
@@ -13,6 +14,7 @@
 </template>
 
 <script setup lang="ts">
+import ScrambleText from "./ScrambleText.vue";
 import { SpinningCamera } from "@/scene/SpinningCamera";
 import ShaderSlider from "./ShaderSlider.vue";
 import { Will } from "@/scene/Will";
