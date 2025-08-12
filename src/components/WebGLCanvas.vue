@@ -1,14 +1,17 @@
 <template>
   <div id="canvas-container"></div>
 
-  <scramble-text-label :text="`Welcome to my meme page.`" />
-  <scramble-text-label :text="`mandi yuk`" />
-
-  <ShaderSlider
-    v-show="loadedRef"
-    :uniforms="uniforms"
-    @update-uniforms="will.onUniformsChanged"
-  />
+  <div class="flex flex-row-reverse">
+    <div>
+      <scramble-text-label :text="`Welcome to my meme page.`" />
+      <scramble-text-label :text="`mandi yuk`" />
+      <ShaderSlider
+        v-show="loadedRef"
+        :uniforms="uniforms"
+        @update-uniforms="will.onUniformsChanged"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
