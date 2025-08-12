@@ -2,7 +2,7 @@
   <div id="canvas-container"></div>
 
   <div class="flex flex-row-reverse">
-    <div>
+    <div class="relative">
       <scramble-text-label :text="`Welcome to my meme page.`" />
       <scramble-text-label :text="`mandi yuk`" />
       <ShaderSlider
