@@ -13,6 +13,7 @@ import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js";
 import ps1VertexShader from "@/assets/shaders/ps1-vertex-shader.glsl?raw";
 import ps1FragmentShader from "@/assets/shaders/ps1-fragment-shader.glsl?raw";
 import modelUrl from "@/assets/models/typing.glb?url";
+import { Css2DScrambleTag } from "./Css2DScrambleTag";
 
 interface ThreeShader {
   vertexShader: string;
@@ -62,10 +63,18 @@ export class Will implements SceneThing {
         scene.add(gltf.scene);
         // add ps1 style affine shader to all materials
         gltf.scene.traverse((child) => {
+          if (child.name.toLocaleLowerCase().endsWith("headtop_end")) {
+            new Css2DScrambleTag(child, child.name);
+          }
+          if (child.name.toLocaleLowerCase().endsWith("hand")) {
+            new Css2DScrambleTag(child, child.name);
+          }
+          if (child.name.toLocaleLowerCase().endsWith("foot")) {
+            new Css2DScrambleTag(child, child.name);
+          }
           if (child instanceof Mesh) {
             const t = child.material.map;
             if (t == null) return;
-
             // Make them textures crispy
             t.generateMipmaps = false;
             t.magFilter = NearestFilter;

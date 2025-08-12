@@ -1,18 +1,14 @@
 <template>
   <div id="canvas-container"></div>
 
-  <scramble-text-label :text="`Welcome to my meme page.`">
-  </scramble-text-label>
-  <scramble-text-label :text="`mandi yuk`"> </scramble-text-label>
+  <scramble-text-label :text="`Welcome to my meme page.`" />
+  <scramble-text-label :text="`mandi yuk`" />
 
   <ShaderSlider
     v-show="loadedRef"
     :uniforms="uniforms"
     @update-uniforms="will.onUniformsChanged"
   />
-  <!-- <InputPanel>
-    <AnimationSlider :settings="animationSettings"/>
-  </InputPanel> -->
 </template>
 
 <script setup lang="ts">
@@ -54,7 +50,6 @@ onUnmounted(() => {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  pointer-events: none;
 }
 #canvas-container canvas {
   width: 100%;

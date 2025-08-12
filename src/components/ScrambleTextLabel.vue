@@ -14,33 +14,37 @@ const props = defineProps<{
 }>();
 
 onMounted(() => {
-  const split = SplitText.create(".scramble", {
-    type: "chars",
-    charsClassClass: "char",
-  });
+  // I dont like that I need this timeout.
+  // Will need to find a better time to split the text
+  setTimeout(() => {
+    const split = SplitText.create(".scramble", {
+      type: "chars",
+      charsClassClass: "char",
+    });
+    split.chars.forEach((c) => {
+      const character = c.textContent;
+      const scrambleEffect = () => {
+        console.log("scramble time");
+        if (!gsap.isTweening(c)) {
+          gsap.to(c, {
+            overwrite: true,
+            scrambleText: {
+              text: character ?? "A",
+              speed: 0.5,
+              revealDelay: 0.3,
+              chars:
+                letterToSpecialChars
+                  .get(character?.toUpperCase() ?? "A")
+                  ?.join("") ?? "apple",
+              oldClass: "corrupt",
+            },
+          });
+        }
+      };
 
-  split.chars.forEach((c) => {
-    const character = c.textContent;
-    const scrambleEffect = () => {
-      if (!gsap.isTweening(c)) {
-        gsap.to(c, {
-          overwrite: true,
-          scrambleText: {
-            text: character ?? "A",
-            speed: 0.5,
-            revealDelay: 0.3,
-            chars:
-              letterToSpecialChars
-                .get(character?.toUpperCase() ?? "A")
-                ?.join("") ?? "apple",
-            oldClass: "corrupt",
-          },
-        });
-      }
-    };
-
-    c.addEventListener("mouseenter", scrambleEffect);
-  });
+      c.addEventListener("mouseenter", scrambleEffect);
+    });
+  }, 1);
 });
 </script>
 
