@@ -1,12 +1,10 @@
 <template>
   <div id="canvas-container"></div>
-
   <div v-show="loaded" class="flex flex-row-reverse">
     <div class="relative">
       <scramble-text-label :text="`Welcome to my meme page.`" />
       <scramble-text-label :text="`mandi yuk`" />
       <ShaderSlider
-        v-show="loadedRef"
         :uniforms="uniforms"
         @update-uniforms="will.onUniformsChanged"
       />
@@ -26,18 +24,17 @@ import { AnimatedGlb } from "@/scene/AnimatedGlb";
 
 const spinningCamera = new SpinningCamera();
 const will = new AnimatedGlb(TestSceneResources[0]);
-const loadedRef = ref(() => will.loaded);
 const uniforms = reactive(will.uniforms);
 
 let downloadCount = 0;
-let loaded = false;
+const loaded = ref(false);
 ResourceLoader.Instance.Enqueue(
   0,
   () => {
     downloadCount++;
-    console.log("apple time");
+
     if (downloadCount == TestSceneResources.length) {
-      loaded = true;
+      loaded.value = true;
       const container = document.getElementById("canvas-container");
       container?.appendChild(AnimationLoop.Css3dRenderer.domElement);
       container?.appendChild(AnimationLoop.Renderer.domElement);

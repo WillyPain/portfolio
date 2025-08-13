@@ -44,10 +44,8 @@ export class ResourceLoader {
       newUrls.push(url);
       this.resources.set(url, null);
     }
-    console.log(newUrls);
     // init in dictonary to keep track of queued resources
     this.downloadQueue.push(new ResourceBatch(priority, cb, ...newUrls));
-    console.log(this.downloadQueue);
   }
 
   // need better name

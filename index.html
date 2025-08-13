@@ -16,10 +16,25 @@
       type="font/ttf" 
       crossorigin="anonymous" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Will Payne - Portfolio</title>
+    <title>Will Payne - Portfolio 2025</title>
   </head>
   <body style="background-color:#080919;">
+    <div id="splash" class="fixed inset-0 flex justify-center items-center">
+      <div class="flex flex-col items-center space-y-4">
+        <p class="text-white text-4xl font-mono">welcome to apple heaven</p>
+        <p class="text-white text-xl font-mono">loading…</p>
+      </div>
+    </div>
     <div class="w-screen h-screen" id="app"></div>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      // Hide splash once app is ready
+      window.addEventListener('load', () => {
+        const splash = document.getElementById('splash');
+        splash.style.transition = 'opacity 0.5s ease';
+        splash.style.opacity = 0;
+        setTimeout(() => splash.remove(), 500);
+      });
+    </script>
   </body>
 </html>

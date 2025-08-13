@@ -24,7 +24,6 @@ onMounted(() => {
     split.chars.forEach((c) => {
       const character = c.textContent;
       const scrambleEffect = () => {
-        console.log("scramble time");
         if (!gsap.isTweening(c)) {
           gsap.to(c, {
             overwrite: true,
