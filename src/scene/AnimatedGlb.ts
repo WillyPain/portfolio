@@ -64,6 +64,7 @@ export class AnimatedGlb implements SceneThing {
     scene.add(this.root.scene);
     // add ps1 style affine shader to all materials
     this.root.scene.traverse((child) => {
+      //TODO: need to remove this
       if (child.name.toLocaleLowerCase().endsWith("headtop_end")) {
         new Css2DScrambleTag(child, child.name);
       }

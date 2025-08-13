@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { letterToSpecialChars } from "@/definitions";
+import { genericGlitchCharacters, letterToSpecialChars } from "@/definitions";
 import gsap from "gsap";
 import { SplitText } from "gsap/all";
 import { onMounted } from "vue";
@@ -24,18 +24,27 @@ onMounted(() => {
     split.chars.forEach((c) => {
       const character = c.textContent;
       const scrambleEffect = () => {
+        const glitch = letterToSpecialChars.get(
+          character?.toUpperCase() ?? "A"
+        );
+        if (!glitch) return;
+        const r = Math.floor(Math.random() * glitch.length) % glitch.length;
+        console.log(r);
+        const randomLetter = glitch[r];
         if (!gsap.isTweening(c)) {
           gsap.to(c, {
             overwrite: true,
             scrambleText: {
-              text: character ?? "A",
-              speed: 0.5,
+              text: randomLetter ?? "A",
+              speed: 1.5,
               revealDelay: 0.3,
-              chars:
-                letterToSpecialChars
-                  .get(character?.toUpperCase() ?? "A")
-                  ?.join("") ?? "apple",
+              chars: genericGlitchCharacters.join(""),
               oldClass: "corrupt",
+            },
+            onComplete: () => {
+              setTimeout(() => {
+                c.textContent = character;
+              }, 200);
             },
           });
         }
@@ -43,7 +52,7 @@ onMounted(() => {
 
       c.addEventListener("mouseenter", scrambleEffect);
     });
-  }, 1);
+  }, 100);
 });
 </script>
 
@@ -56,18 +65,17 @@ onMounted(() => {
   background-color: #0240ff;
 }
 .corrupt {
-  font-family: "Unispace", "arial", monospace;
-  font-style: italic;
+  font-family: "VT323 Regular", monospace;
   font-weight: 400;
-  font-size: 1rem;
+  font-size: 2rem;
+  /* padding: 0.45rem 0.01rem; */
   color: #0240ff;
-  line-height: 1rem;
   background-color: white;
-  text-shadow:
+  /* text-shadow:
     1px 0 red,
     -1px 0 cyan,
     2px 1px #00ff7f;
-  animation: glitch-shadow 0.3s infinite alternate;
+  animation: glitch-shadow 0.3s infinite alternate; */
 }
 
 @keyframes glitch-shadow {

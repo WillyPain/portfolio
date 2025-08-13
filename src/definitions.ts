@@ -28,5 +28,17 @@ export const letterToSpecialChars: Map<string, string[]> = new Map([
   ["Z", ["2", "7", "≥", "ƶ"]],
 ]);
 
+export const genericGlitchCharacters = [
+  "!",
+  "@",
+  "#",
+  "$",
+  "%",
+  "^",
+  "&",
+  "*",
+  "+",
+];
+
 import typingModelUrl from "@/assets/models/typing.glb?url";
 export const TestSceneResources: string[] = [typingModelUrl];
