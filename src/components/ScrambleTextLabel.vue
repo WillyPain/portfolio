@@ -29,7 +29,6 @@ onMounted(() => {
         );
         if (!glitch) return;
         const r = Math.floor(Math.random() * glitch.length) % glitch.length;
-        console.log(r);
         const randomLetter = glitch[r];
         if (!gsap.isTweening(c)) {
           gsap.to(c, {

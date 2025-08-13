@@ -13,6 +13,7 @@ varying vec2 vUv;
 varying float vDepth;
 uniform bool uEnableVertexSnap;
 uniform float uVertexSnap;
+uniform vec2 uMousePosition;
 varying float vAffine;
 
 #include <common>
@@ -47,11 +48,15 @@ void main() {
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
 	#include <clipping_planes_vertex>
-    // PS1 vertex snapping
-    if (uEnableVertexSnap) {
-    	float snap = uVertexSnap;
-	    gl_Position.xy = floor(gl_Position.xy / snap) * snap;
-    }
+	// PS1 vertex snapping
+	if (uEnableVertexSnap) {
+		float snap = uVertexSnap;
+		float mouseDist = length((gl_Position.xy / gl_Position.w) - uMousePosition);
+		if (mouseDist < 0.1) {
+			snap *= 20.0;
+		}
+		gl_Position.xy = floor(gl_Position.xy / snap) * snap;
+	}
 	
 	vViewPosition = - mvPosition.xyz;
 	#include <worldpos_vertex>

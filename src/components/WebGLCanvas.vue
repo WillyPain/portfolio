@@ -21,6 +21,7 @@ import { onMounted, onUnmounted, reactive, ref } from "vue";
 import { ResourceLoader } from "@/util/ResourceLoader";
 import { TestSceneResources } from "@/definitions";
 import { AnimatedGlb } from "@/scene/AnimatedGlb";
+import gsap from "gsap";
 
 const spinningCamera = new SpinningCamera();
 const will = new AnimatedGlb(TestSceneResources[0]);
@@ -48,7 +49,16 @@ ResourceLoader.Instance.Enqueue(
 );
 ResourceLoader.Instance.LoadResources();
 
-onMounted(() => {});
+onMounted(() => {
+  document.addEventListener("mousemove", (e) => {
+    gsap.to(uniforms.uMousePosition.value, {
+      x: (e.clientX / window.innerWidth) * 2 - 1,
+      y: -(e.clientY / window.innerHeight) * 2 + 1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  });
+});
 
 onUnmounted(() => {
   AnimationLoop.Stop();

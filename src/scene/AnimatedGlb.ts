@@ -7,6 +7,7 @@ import {
   Mesh,
   NearestFilter,
   Uniform,
+  Vector2,
   type Scene,
 } from "three";
 import { type GLTF } from "three/examples/jsm/Addons.js";
@@ -31,6 +32,7 @@ class Ps1ShaderUniforms {
   uDithering = new Uniform(0);
   uAffineIntensity = new Uniform(1);
   uPixelation = new Uniform(256);
+  uMousePosition = new Uniform(new Vector2(0, 0));
 }
 
 export class AnimatedGlb implements SceneThing {

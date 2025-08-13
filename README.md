@@ -78,3 +78,7 @@
 ## https://codepen.io/ZachSaucier/pen/QwWVaMo
 
 - Officail GSAP example on split text scrambling
+
+## https://www.youtube.com/watch?v=nr5QmPo-HxY&ab_channel=Thebausffs
+
+- Great tutorial for wireframe shader

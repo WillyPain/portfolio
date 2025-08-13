@@ -82,6 +82,7 @@ const props = defineProps<{
     uAffineIntensity: Uniform;
     uPixelation: Uniform;
     uEnableVertexSnap: Uniform;
+    uMousePosition: Uniform;
   };
 }>();
 
