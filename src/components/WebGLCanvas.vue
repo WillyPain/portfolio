@@ -1,7 +1,7 @@
 <template>
   <div id="canvas-container"></div>
 
-  <div class="flex flex-row-reverse">
+  <div v-show="loaded" class="flex flex-row-reverse">
     <div class="relative">
       <scramble-text-label :text="`Welcome to my meme page.`" />
       <scramble-text-label :text="`mandi yuk`" />
@@ -18,26 +18,40 @@
 import ScrambleTextLabel from "./ScrambleTextLabel.vue";
 import { SpinningCamera } from "@/scene/SpinningCamera";
 import ShaderSlider from "./ShaderSlider.vue";
-import { Will } from "@/scene/Will";
 import { AnimationLoop } from "@/util/AnimationLoop";
 import { onMounted, onUnmounted, reactive, ref } from "vue";
+import { ResourceLoader } from "@/util/ResourceLoader";
+import { TestSceneResources } from "@/definitions";
+import { AnimatedGlb } from "@/scene/AnimatedGlb";
 
 const spinningCamera = new SpinningCamera();
-
-const will = new Will();
+const will = new AnimatedGlb(TestSceneResources[0]);
 const loadedRef = ref(() => will.loaded);
 const uniforms = reactive(will.uniforms);
 
-onMounted(() => {
-  const container = document.getElementById("canvas-container");
-  container?.appendChild(AnimationLoop.Css3dRenderer.domElement);
-  container?.appendChild(AnimationLoop.Renderer.domElement);
-  container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
+let downloadCount = 0;
+let loaded = false;
+ResourceLoader.Instance.Enqueue(
+  0,
+  () => {
+    downloadCount++;
+    console.log("apple time");
+    if (downloadCount == TestSceneResources.length) {
+      loaded = true;
+      const container = document.getElementById("canvas-container");
+      container?.appendChild(AnimationLoop.Css3dRenderer.domElement);
+      container?.appendChild(AnimationLoop.Renderer.domElement);
+      container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
+      AnimationLoop.Subscribe(spinningCamera);
+      AnimationLoop.Subscribe(will);
+      AnimationLoop.Start();
+    }
+  },
+  ...TestSceneResources
+);
+ResourceLoader.Instance.LoadResources();
 
-  AnimationLoop.Subscribe(spinningCamera);
-  AnimationLoop.Subscribe(will);
-  AnimationLoop.Start();
-});
+onMounted(() => {});
 
 onUnmounted(() => {
   AnimationLoop.Stop();

@@ -27,3 +27,6 @@ export const letterToSpecialChars: Map<string, string[]> = new Map([
   ["Y", ["`", "¥", "ɏ"]],
   ["Z", ["2", "7", "≥", "ƶ"]],
 ]);
+
+import typingModelUrl from "@/assets/models/typing.glb?url";
+export const TestSceneResources: string[] = [typingModelUrl];
