@@ -82,3 +82,11 @@
 ## https://www.youtube.com/watch?v=nr5QmPo-HxY&ab_channel=Thebausffs
 
 - Great tutorial for wireframe shader
+
+## https://dimden.dev/
+
+- Great old web example
+
+## https://bertrandcandas.com/
+
+- Excellent use of the medium (webgl and html)
