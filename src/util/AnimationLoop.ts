@@ -20,8 +20,12 @@ export class AnimationSettings {
 
 export class AnimationLoop {
   private constructor() {
-    this._renderer.setSize(640, 480, false);
+    const aspectRatio = window.innerWidth / window.innerHeight;
+    const canvasWidth = 640;
+    this._renderer.setSize(canvasWidth, canvasWidth * aspectRatio, false);
     this._renderer.setClearColor(0x000000, 0);
+    // Hopefully will stop the aliasing
+    this._renderer.domElement.style.imageRendering = "pixelated";
 
     // Rendering this behind WebGL so we can achieve occlude effect
     this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
