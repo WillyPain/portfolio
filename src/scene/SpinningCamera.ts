@@ -14,12 +14,16 @@ export class CameraSettings {
 }
 
 export class SpinningCamera implements SceneThing {
-
   settings = new CameraSettings();
   camera?: Camera;
 
   init(scene: Scene): void {
-    this.camera = new PerspectiveCamera(this.settings.fov, 1, 0.1, 2000);
+    this.camera = new PerspectiveCamera(
+      this.settings.fov,
+      window.innerWidth / window.innerHeight,
+      0.1,
+      2000
+    );
     this.camera.position.y = this.settings.height;
     this.camera.position.z = this.settings.distance;
 
