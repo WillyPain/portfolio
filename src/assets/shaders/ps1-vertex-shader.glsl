@@ -53,9 +53,12 @@ void main() {
 		float snap = uVertexSnap;
 		float mouseDist = length((gl_Position.xy / gl_Position.w) - uMousePosition);
 		if (mouseDist < 0.1) {
-			snap *= 20.0;
+			snap *= 10.0;
+			gl_Position.xy = floor(gl_Position.xy / snap) * snap;
 		}
-		gl_Position.xy = floor(gl_Position.xy / snap) * snap;
+		else {
+			gl_Position.xy = ceil(gl_Position.xy / snap) * snap;
+		}
 	}
 	
 	vViewPosition = - mvPosition.xyz;

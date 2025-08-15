@@ -11,7 +11,10 @@ import { onMounted } from "vue";
 // Props: shader uniforms object
 const props = defineProps<{
   text: string;
+  color: string;
 }>();
+
+const colorProp = props.color;
 
 onMounted(() => {
   // I dont like that I need this timeout.
@@ -48,7 +51,6 @@ onMounted(() => {
           });
         }
       };
-
       c.addEventListener("mouseenter", scrambleEffect);
     });
   }, 100);
@@ -61,7 +63,8 @@ onMounted(() => {
   font-style: normal;
   font-weight: 400;
   font-size: 2rem;
-  background-color: #0240ff;
+  background-color: black;
+  color: v-bind("colorProp");
 }
 .corrupt {
   font-family: "VT323 Regular", monospace;

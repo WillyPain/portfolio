@@ -13,7 +13,6 @@ import {
 import { type GLTF } from "three/examples/jsm/Addons.js";
 import ps1VertexShader from "@/assets/shaders/ps1-vertex-shader.glsl?raw";
 import ps1FragmentShader from "@/assets/shaders/ps1-fragment-shader.glsl?raw";
-import { Css2DScrambleTag } from "./Css2DScrambleTag";
 import { ResourceLoader } from "@/util/ResourceLoader";
 
 interface ThreeShader {
@@ -66,16 +65,6 @@ export class AnimatedGlb implements SceneThing {
     scene.add(this.root.scene);
     // add ps1 style affine shader to all materials
     this.root.scene.traverse((child) => {
-      //TODO: need to remove this
-      if (child.name.toLocaleLowerCase().endsWith("headtop_end")) {
-        new Css2DScrambleTag(child, child.name);
-      }
-      if (child.name.toLocaleLowerCase().endsWith("hand")) {
-        new Css2DScrambleTag(child, child.name);
-      }
-      if (child.name.toLocaleLowerCase().endsWith("foot")) {
-        new Css2DScrambleTag(child, child.name);
-      }
       if (child instanceof Mesh) {
         const t = child.material.map;
         if (t == null) return;
