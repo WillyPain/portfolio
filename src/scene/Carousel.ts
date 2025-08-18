@@ -1,7 +1,6 @@
 import type { SceneThing } from "@/util/AnimationLoop";
 import { MathUtils, Object3D, type Scene } from "three";
-import { Css2DScrambleTag } from "./Css2DScrambleTag";
-import { CSS2DObject, CSS3DObject } from "three/examples/jsm/Addons.js";
+import { CSS2DObject } from "three/examples/jsm/Addons.js";
 
 export class Carousel implements SceneThing {
   root: Object3D;
@@ -35,22 +34,19 @@ export class Carousel implements SceneThing {
         0
       );
       this.horses.push(horse);
-
-      // new Css2DScrambleTag(horse, "h:" + ii);
-
       horse.add(new CSS2DObject(element));
 
       this.root.add(horse);
-      this.root.rotateX(MathUtils.DEG2RAD * -88);
       ii++;
     }
-    // new Css2DScrambleTag(this.root, "helllooooooo");
+    this.root.rotateX(MathUtils.DEG2RAD * -55);
+
     scene.add(this.root);
   }
 
   update(delta: number): void {
     // implement rotation logic here
-    this.root.rotateZ(delta * this.speed);
+    this.root.rotateZ(delta * -this.speed);
   }
 
   cleanup(scene: Scene): void {

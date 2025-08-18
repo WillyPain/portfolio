@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import png from "@/assets/vue.svg?url";
+import png from "@/assets/clippy.png?url";
 // No reactive logic yet, just layout
 </script>
 

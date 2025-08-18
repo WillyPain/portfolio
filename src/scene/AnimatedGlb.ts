@@ -26,11 +26,11 @@ interface ThreeShader {
 class Ps1ShaderUniforms {
   [key: string]: Uniform;
   uEnableVertexSnap = new Uniform(true);
-  uVertexSnap = new Uniform(0.01);
-  uColorDepth = new Uniform(20.0);
+  uVertexSnap = new Uniform(0.009);
+  uColorDepth = new Uniform(40);
   uDithering = new Uniform(0);
   uAffineIntensity = new Uniform(1);
-  uPixelation = new Uniform(256);
+  uPixelation = new Uniform(512);
   uMousePosition = new Uniform(new Vector2(0, 0));
 }
 
@@ -61,7 +61,6 @@ export class AnimatedGlb implements SceneThing {
   init(scene: Scene): void {
     this.loaded = true;
     this.root = ResourceLoader.Get<GLTF>(this.modelUrl);
-    this.root.scene.add(new AmbientLight(0xffffff, 8));
     scene.add(this.root.scene);
     // add ps1 style affine shader to all materials
     this.root.scene.traverse((child) => {
@@ -92,11 +91,13 @@ export class AnimatedGlb implements SceneThing {
       }
     });
 
-    this.root.animations[0].tracks[0].setInterpolation(InterpolateDiscrete);
-    this.mixer = new AnimationMixer(this.root.scene);
-    this.root.animations.forEach((clip) => {
-      this.mixer!.clipAction(clip).play();
-    });
+    if (this.root.animations.length > 0) {
+      this.root.animations[0].tracks[0].setInterpolation(InterpolateDiscrete);
+      this.mixer = new AnimationMixer(this.root.scene);
+      this.root.animations.forEach((clip) => {
+        this.mixer!.clipAction(clip).play();
+      });
+    }
   }
 
   accumulator = 0;

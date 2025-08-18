@@ -20,25 +20,53 @@ export class AnimationSettings {
 
 export class AnimationLoop {
   private constructor() {
+    // Setup CSS3D Canvas
+    this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
+    this._css3dRenderer.domElement.style.position = "absolute";
+    this._css3dRenderer.domElement.style.top = "0";
+    this._css3dRenderer.domElement.id = "css3d";
+    // Rendering this behind WebGL so we can achieve occlude effect
+    this._css3dRenderer.domElement.style.zIndex = "-1";
+
+    // Setup WebGL Canvas
     const aspectRatio = window.innerWidth / window.innerHeight;
     const canvasWidth = 640;
     this._renderer.setSize(canvasWidth, canvasWidth * aspectRatio, false);
     this._renderer.setClearColor(0x000000, 0);
-    // Hopefully will stop the aliasing
     this._renderer.domElement.style.imageRendering = "pixelated";
+    this._renderer.domElement.style.pointerEvents = "none";
 
-    // Rendering this behind WebGL so we can achieve occlude effect
-    this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
-    this._css3dRenderer.domElement.style.position = "absolute";
-    this._css3dRenderer.domElement.style.top = "0";
-    this._css3dRenderer.domElement.style.zIndex = "-1";
-
+    // Setup CSS2D Canvas
     this._css2dRenderer.setSize(window.innerWidth, window.innerHeight);
     this._css2dRenderer.domElement.style.position = "absolute";
     this._css2dRenderer.domElement.style.top = "0";
+    this._css2dRenderer.domElement.style.transformStyle = "preserve-3d";
+    this._css2dRenderer.domElement.style.zIndex = "-1";
+    // next the css3d renderer inside the css2d renderer... (this is getting stinky)
+
+    // Setup pointer event handling
+    this._css2dRenderer.domElement.addEventListener("mousemove", (e) => {
+      this._css3dRenderer.domElement.dispatchEvent(new PointerEvent(e.type, e));
+    });
+
+    this._renderer.domElement.addEventListener("mousemove", (e) => {
+      this._css3dRenderer.domElement.dispatchEvent(new PointerEvent(e.type, e));
+    });
+
+    this._css3dRenderer.domElement.addEventListener("mousemove", (e) => {
+      this._css2dRenderer.domElement.style.pointerEvents = "none";
+      const hit = document.elementFromPoint(e.clientX, e.clientY);
+      if (hit && hit.id !== "css3d" && hit.id !== "monitor") {
+        console.log(hit);
+        hit?.dispatchEvent(new PointerEvent("css3d", e));
+      } else {
+        console.log("damn it");
+      }
+      this._css2dRenderer.domElement.style.pointerEvents = "auto";
+    });
   }
 
-  private _scene: Scene = new Scene();
+  public scene: Scene = new Scene();
   private _renderer: WebGLRenderer = new WebGLRenderer();
   private _css3dRenderer: CSS3DRenderer = new CSS3DRenderer();
   private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
@@ -75,7 +103,7 @@ export class AnimationLoop {
 
   private _start() {
     this._clock.start();
-    this._handlers.forEach((h) => h.init(this._scene));
+    this._handlers.forEach((h) => h.init(this.scene));
     this._renderer.setAnimationLoop(this.update.bind(this));
 
     //once off render
@@ -87,9 +115,9 @@ export class AnimationLoop {
     this._handlers.forEach((h) => h.update(delta));
     const camera = CameraController.MainCamera;
     if (camera) {
-      this._renderer.render(this._scene, camera);
-      this._css3dRenderer.render(this._scene, camera);
-      this._css2dRenderer.render(this._scene, camera);
+      this._renderer.render(this.scene, camera);
+      this._css3dRenderer.render(this.scene, camera);
+      this._css2dRenderer.render(this.scene, camera);
     }
   }
 
@@ -98,7 +126,7 @@ export class AnimationLoop {
   }
 
   private _stop() {
-    this._handlers.forEach((h) => h.cleanup(this._scene));
+    this._handlers.forEach((h) => h.cleanup(this.scene));
     this._handlers = [];
   }
 }

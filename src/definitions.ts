@@ -40,5 +40,6 @@ export const genericGlitchCharacters = [
   "+",
 ];
 
+import pc from "@/assets/models/pc.glb?url";
 import typingModelUrl from "@/assets/models/typing.glb?url";
-export const TestSceneResources: string[] = [typingModelUrl];
+export const TestSceneResources: string[] = [typingModelUrl, pc];

@@ -77,7 +77,7 @@
 
 ## https://codepen.io/ZachSaucier/pen/QwWVaMo
 
-- Officail GSAP example on split text scrambling
+- Official GSAP example on split text scrambling
 
 ## https://www.youtube.com/watch?v=nr5QmPo-HxY&ab_channel=Thebausffs
 
@@ -90,3 +90,24 @@
 ## https://bertrandcandas.com/
 
 - Excellent use of the medium (webgl and html)
+
+## https://www.nk.studio/
+
+- Insane transitions
+
+## https://eloyb.design/
+
+- this is spiritualy similar to what I'm going for
+
+## https://infaces-digitalbutlers.webflow.io/
+
+- HOLY SHIT
+- This is an incredibly smooth looping horizontal scroller
+
+## https://www.palmer-dinnerware.com/
+
+- Another insane example
+
+## https://kprverse.com/
+
+- wow wow

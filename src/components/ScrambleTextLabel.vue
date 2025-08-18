@@ -9,10 +9,17 @@ import { SplitText } from "gsap/all";
 import { onMounted } from "vue";
 
 // Props: shader uniforms object
-const props = defineProps<{
-  text: string;
-  color: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    text: string;
+    color?: string;
+    size?: string;
+  }>(),
+  {
+    color: "white",
+    size: "2rem",
+  }
+);
 
 const colorProp = props.color;
 
@@ -52,6 +59,7 @@ onMounted(() => {
         }
       };
       c.addEventListener("mouseenter", scrambleEffect);
+      c.addEventListener("css3d", scrambleEffect);
     });
   }, 100);
 });
@@ -62,17 +70,19 @@ onMounted(() => {
   font-family: "VT323 Regular", monospace;
   font-style: normal;
   font-weight: 400;
-  font-size: 2rem;
+  line-height: 100%;
   background-color: black;
-  color: v-bind("colorProp");
+  color: v-bind(colorProp);
+  font-size: v-bind(size);
 }
 .corrupt {
   font-family: "VT323 Regular", monospace;
   font-weight: 400;
-  font-size: 2rem;
   /* padding: 0.45rem 0.01rem; */
   color: #0240ff;
   background-color: white;
+  /* border: white;
+  border-style: solid; */
   /* text-shadow:
     1px 0 red,
     -1px 0 cyan,
