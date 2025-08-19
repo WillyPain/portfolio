@@ -1,16 +1,22 @@
-import { GLTFLoader, type GLTF } from "three/examples/jsm/Addons.js";
+import {
+  ResourceTypes,
+  type MediaResource,
+  type ResourceEntry,
+} from "@/definitions";
+import { TextureLoader } from "three";
+import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 type DownloadedCallback = () => void;
 class ResourceBatch {
   priority: number;
-  urls: string[];
+  resourceEntry: ResourceEntry[];
   cb?: () => void;
   constructor(
     priority: number = Number.MAX_SAFE_INTEGER,
     cb?: DownloadedCallback,
-    ...urls: string[]
+    ...urls: ResourceEntry[]
   ) {
-    this.urls = urls;
+    this.resourceEntry = urls;
     this.priority = priority;
     this.cb = cb;
   }
@@ -21,7 +27,7 @@ class ResourceBatch {
 export class ResourceLoader {
   constructor() {}
 
-  resources = new Map<string, GLTF | null>();
+  resources = new Map<string, MediaResource | string | null>();
   downloadQueue: ResourceBatch[] = [];
 
   private static _instance: ResourceLoader;
@@ -33,24 +39,25 @@ export class ResourceLoader {
   Enqueue(
     priority: number = Number.MAX_SAFE_INTEGER,
     cb?: DownloadedCallback,
-    ...urls: string[]
+    ...resources: ResourceEntry[]
   ) {
-    const newUrls = [];
-    for (const url of urls) {
-      if (this.resources.has(url)) {
+    const newResources = [];
+    for (const resource of resources) {
+      if (this.resources.has(resource.url)) {
         cb?.();
         continue;
       }
-      newUrls.push(url);
-      this.resources.set(url, null);
+      newResources.push(resource);
+      this.resources.set(resource.url, null);
     }
     // init in dictonary to keep track of queued resources
-    this.downloadQueue.push(new ResourceBatch(priority, cb, ...newUrls));
+    this.downloadQueue.push(new ResourceBatch(priority, cb, ...newResources));
   }
 
   // need better name
   LoadResources() {
     const gltfLoader = new GLTFLoader();
+    const textureLoader = new TextureLoader();
     // Sort downloadQueue by priority
     this.downloadQueue.sort((a, b) => a.priority - b.priority);
 
@@ -59,20 +66,55 @@ export class ResourceLoader {
       const batch = this.downloadQueue.shift();
       if (!batch) continue;
 
-      for (const url of batch.urls) {
-        gltfLoader.load(url, (file) => {
-          this.OnDownloaded(url, file);
-          batch.cb?.();
-        });
+      for (const resourceEntry of batch.resourceEntry) {
+        switch (resourceEntry.type) {
+          case ResourceTypes.GLTF:
+            gltfLoader.load(resourceEntry.url, (file) => {
+              this.OnDownloaded(resourceEntry.url, file);
+              batch.cb?.();
+            });
+            break;
+
+          case ResourceTypes.Video: {
+            const video = document.createElement<"video">("video");
+            video.src = resourceEntry.url;
+            video.preload = "auto";
+            video.crossOrigin = "anonymous"; // Important for CORS
+            video.loop = true;
+            video.muted = true; // Required for autoplay in most browsers
+
+            video.addEventListener("canplay", () => {
+              this.OnDownloaded(resourceEntry.url, video);
+              batch.cb?.();
+            });
+
+            video.addEventListener("error", () => {
+              console.error(`Failed to load video: ${resourceEntry.url}`);
+              batch.cb?.();
+            });
+
+            video.load();
+            break;
+          }
+          case ResourceTypes.Texture:
+            textureLoader.load(resourceEntry.url, (texture) => {
+              this.OnDownloaded(resourceEntry.url, texture);
+              batch.cb?.();
+            });
+            break;
+
+          default:
+        }
       }
     }
   }
 
-  OnDownloaded(url: string, file: GLTF | null) {
+  OnDownloaded(url: string, file: MediaResource | null) {
     this.resources.set(url, file);
   }
 
-  static Get<T extends GLTF | null | undefined>(url: string): T {
+  // possibly dont event need this method? accessing resource by URL should be cached by browser?
+  static Get<T extends MediaResource | null | undefined>(url: string): T {
     const resource = this.Instance.resources.get(url);
     return resource as T;
   }

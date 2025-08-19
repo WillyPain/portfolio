@@ -1,4 +1,4 @@
-import { Clock, Scene, WebGLRenderer } from "three";
+import { Clock, Scene, SRGBColorSpace, WebGLRenderer } from "three";
 import { CameraController } from "./CameraController";
 import { CSS2DRenderer, CSS3DRenderer } from "three/examples/jsm/Addons.js";
 
@@ -19,6 +19,14 @@ export class AnimationSettings {
 }
 
 export class AnimationLoop {
+  public scene: Scene = new Scene();
+  public cssScene: Scene = new Scene();
+  private _renderer: WebGLRenderer;
+  private _css3dRenderer: CSS3DRenderer = new CSS3DRenderer();
+  private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
+  private _clock: Clock = new Clock();
+  private _handlers: SceneThing[] = [];
+
   private constructor() {
     // Setup CSS3D Canvas
     this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -31,10 +39,18 @@ export class AnimationLoop {
     // Setup WebGL Canvas
     const aspectRatio = window.innerWidth / window.innerHeight;
     const canvasWidth = 640;
+    this._renderer = new WebGLRenderer({
+      alpha: true,
+      premultipliedAlpha: false,
+      powerPreference: "high-performance",
+    });
     this._renderer.setSize(canvasWidth, canvasWidth * aspectRatio, false);
-    this._renderer.setClearColor(0x000000, 0);
+    this._renderer.setClearColor(0x000000, 0.0);
+    this._renderer.outputColorSpace = SRGBColorSpace;
+    this._renderer.domElement.style.position = "absolute";
     this._renderer.domElement.style.imageRendering = "pixelated";
     this._renderer.domElement.style.pointerEvents = "none";
+    this._renderer.domElement.style.zIndex = "1px";
 
     // Setup CSS2D Canvas
     this._css2dRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -65,13 +81,6 @@ export class AnimationLoop {
       this._css2dRenderer.domElement.style.pointerEvents = "auto";
     });
   }
-
-  public scene: Scene = new Scene();
-  private _renderer: WebGLRenderer = new WebGLRenderer();
-  private _css3dRenderer: CSS3DRenderer = new CSS3DRenderer();
-  private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
-  private _clock: Clock = new Clock();
-  private _handlers: SceneThing[] = [];
 
   public static _instance: AnimationLoop;
   public static get Instance(): AnimationLoop {
@@ -114,9 +123,10 @@ export class AnimationLoop {
     const delta = this._clock.getDelta();
     this._handlers.forEach((h) => h.update(delta));
     const camera = CameraController.MainCamera;
+    camera?.updateMatrix();
     if (camera) {
       this._renderer.render(this.scene, camera);
-      this._css3dRenderer.render(this.scene, camera);
+      this._css3dRenderer.render(this.cssScene, camera);
       this._css2dRenderer.render(this.scene, camera);
     }
   }

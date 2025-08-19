@@ -1,4 +1,4 @@
-import type { SceneThing } from "@/util/AnimationLoop";
+import { AnimationLoop, type SceneThing } from "@/util/AnimationLoop";
 import {
   DoubleSide,
   Euler,
@@ -13,6 +13,7 @@ import { CSS3DObject } from "three/examples/jsm/Addons.js";
 
 export class VirtualCanvas implements SceneThing {
   root = new Object3D();
+  cssRoot = new Object3D();
   canvas: CSS3DObject;
   constructor(
     canvas: HTMLElement,
@@ -28,13 +29,13 @@ export class VirtualCanvas implements SceneThing {
 
     // Create GL plane
     const material = new MeshLambertMaterial({
-      color: 0x000000,
+      // color: 0x000000,
       opacity: 0,
       transparent: true,
       side: DoubleSide,
       blending: NoBlending,
-      depthTest: true,
-      depthWrite: true,
+      // depthTest: true,
+      // depthWrite: true,
     });
 
     // Create plane geometry
@@ -46,15 +47,20 @@ export class VirtualCanvas implements SceneThing {
     mesh.scale.set(1 * scaleFactor, 1 * scaleFactor, 1 * scaleFactor);
 
     this.root.add(mesh);
-    this.root.add(this.canvas);
+    this.cssRoot.add(this.canvas);
 
     this.root.position.set(x, y, z);
     this.root.setRotationFromEuler(euler);
     this.root.scale.set(scale, scale, scale);
+
+    this.cssRoot.position.set(x, y, z);
+    this.cssRoot.setRotationFromEuler(euler);
+    this.cssRoot.scale.set(scale, scale, scale);
   }
 
   init(scene: Scene): void {
     scene.add(this.root);
+    AnimationLoop.Instance.cssScene.add(this.cssRoot);
   }
 
   update(delta: number): void {}

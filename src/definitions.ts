@@ -42,4 +42,40 @@ export const genericGlitchCharacters = [
 
 import pc from "@/assets/models/pc.glb?url";
 import typingModelUrl from "@/assets/models/typing.glb?url";
-export const TestSceneResources: string[] = [typingModelUrl, pc];
+import brokenScreenVideo from "@/assets/video/broken-screen.mp4?url";
+import screenVideo from "@/assets/video/screen-1.mp4?url";
+import fingerprintTexture from "@/assets/textures/screen/fingerprints.png?url";
+import smudge from "@/assets/textures/screen/smudges.jpg?url";
+import type { Texture } from "three";
+import type { GLTF } from "three/examples/jsm/Addons.js";
+
+export const ResourceUrls = {
+  fingerprintTexture: smudge,
+} as const;
+
+export type ResourceEntry = {
+  url: string;
+  type: ResourceType;
+};
+export type MediaResource =
+  | GLTF
+  | HTMLVideoElement
+  | HTMLAudioElement
+  | Texture;
+export const ResourceTypes = {
+  Audio: "AUDIO",
+  GLTF: "GLB",
+  GLSL: "GLSL",
+  Video: "VIDEO",
+  Texture: "TEXTURE",
+} as const;
+
+export type ResourceType = (typeof ResourceTypes)[keyof typeof ResourceTypes];
+
+export const TestSceneResources: ResourceEntry[] = [
+  { url: typingModelUrl, type: ResourceTypes.GLTF },
+  { url: pc, type: ResourceTypes.GLTF },
+  { url: brokenScreenVideo, type: ResourceTypes.Video },
+  { url: screenVideo, type: ResourceTypes.Video },
+  { url: ResourceUrls.fingerprintTexture, type: ResourceTypes.Texture },
+];

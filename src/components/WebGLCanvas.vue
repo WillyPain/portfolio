@@ -1,6 +1,7 @@
 <template>
   <div class="scrollTarget"></div>
-  <div id="canvas-container"></div>
+  <div id="css3d"></div>
+  <div id="webgl"></div>
   <div v-show="loaded" class="flex flex-row justify-center">
     <div class="relative terminal-panel flex flex-col text-center">
       <scramble-text-label
@@ -87,14 +88,15 @@ import OverlayButtons from "./OverlayButtons.vue";
 import { FollowCurve } from "@/scene/FollowCurve";
 import { AmbientLight, Euler, MathUtils } from "three";
 import { VirtualCanvas } from "@/scene/VirtualCanvas";
+import { Monitor } from "@/scene/Monitor";
 
 const monitor = ref<HTMLElement | null>(null);
 const carouselStuff = ref<HTMLDivElement | null>(null);
 const spinningCamera = new SpinningCamera();
 const followCurve = new FollowCurve();
 spinningCamera.settings.enableRotation = false;
-const will = new AnimatedGlb(TestSceneResources[0]);
-const pc = new AnimatedGlb(TestSceneResources[1]);
+const will = new AnimatedGlb(TestSceneResources[0].url);
+const pc = new AnimatedGlb(TestSceneResources[1].url);
 const uniforms = reactive(will.uniforms);
 let downloadCount = 0;
 const loaded = ref(false);
@@ -116,10 +118,13 @@ ResourceLoader.Instance.Enqueue(
         const carouselSpeed = 0.5;
         const carousel = new Carousel(children, carouselSize, carouselSpeed);
         loaded.value = true;
-        const container = document.getElementById("canvas-container");
-        container?.appendChild(AnimationLoop.Css3dRenderer.domElement);
-        container?.appendChild(AnimationLoop.Renderer.domElement);
-        container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
+        document
+          .getElementById("css3d")
+          ?.appendChild(AnimationLoop.Css3dRenderer.domElement);
+        document
+          .getElementById("webgl")
+          ?.appendChild(AnimationLoop.Renderer.domElement);
+        // container?.appendChild(AnimationLoop.Css2dRenderer.domElement);
 
         const virtualPage = new VirtualCanvas(
           monitor.value!,
@@ -136,6 +141,7 @@ ResourceLoader.Instance.Enqueue(
         AnimationLoop.Instance.scene.add(new AmbientLight(0xffffff, 8));
         AnimationLoop.Subscribe(carousel);
         AnimationLoop.Subscribe(virtualPage);
+        AnimationLoop.Subscribe(new Monitor());
         AnimationLoop.Start();
 
         // shuffle me boys
@@ -183,9 +189,9 @@ onMounted(() => {
       }
     );
   }
-  loopColumn(col1.value!, 100);
-  loopColumn(col2.value!, -50);
-  loopColumn(col3.value!, 50);
+  // loopColumn(col1.value!, 100);
+  // loopColumn(col2.value!, -50);
+  // loopColumn(col3.value!, 50);
 
   document.addEventListener("mousemove", (e) => {
     gsap.to(uniforms.uMousePosition.value, {
@@ -224,7 +230,8 @@ onUnmounted(() => {
 
 <style>
 /* Full viewport canavs and place it behind UI */
-#canvas-container {
+#webgl,
+#css3d {
   position: fixed;
   top: 0;
   left: 0;
@@ -232,10 +239,15 @@ onUnmounted(() => {
   height: 100vh;
   overflow: hidden;
 }
-#canvas-container canvas {
+#webgl canvas,
+#css3d canvas {
   width: 100%;
   height: 100%;
   display: block;
+}
+
+#webgl {
+  pointer-events: none;
 }
 
 .terminal-panel {

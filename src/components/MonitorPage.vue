@@ -1,15 +1,22 @@
 <template>
   <div
     id="monitor"
-    class="w-[120vh] h-[100vh] overflow-auto bg-black text-emerald-300 relative p-50"
+    class="w-[120vh] h-[100vh] overflow-auto bg-amber-100 text-emerald-300 relative p-50"
   >
     <div class="scrollTarget"></div>
-    <h1>anyone home?</h1>
-    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
-    <h1>anyone home?</h1>
     <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
     <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
-    <h1>anyone home?</h1>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
+    <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
     <scramble-text-label :text="`MODESTY`" color="yellow"></scramble-text-label>
   </div>
 </template>
