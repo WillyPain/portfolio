@@ -14,10 +14,12 @@ const props = withDefaults(
     text: string;
     color?: string;
     size?: string;
+    bg?: string;
   }>(),
   {
     color: "white",
     size: "2rem",
+    bg: "blue",
   }
 );
 
@@ -71,7 +73,7 @@ onMounted(() => {
   font-style: normal;
   font-weight: 400;
   line-height: 100%;
-  background-color: black;
+  background-color: v-bind(bg);
   color: v-bind(colorProp);
   font-size: v-bind(size);
 }
