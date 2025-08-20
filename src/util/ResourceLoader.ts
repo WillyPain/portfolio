@@ -3,7 +3,7 @@ import {
   type MediaResource,
   type ResourceEntry,
 } from "@/definitions";
-import { TextureLoader } from "three";
+import { SRGBColorSpace, TextureLoader } from "three";
 import { GLTFLoader } from "three/examples/jsm/Addons.js";
 
 type DownloadedCallback = () => void;
@@ -98,6 +98,8 @@ export class ResourceLoader {
           }
           case ResourceTypes.Texture:
             textureLoader.load(resourceEntry.url, (texture) => {
+              texture.colorSpace = SRGBColorSpace;
+              texture.needsUpdate = true;
               this.OnDownloaded(resourceEntry.url, texture);
               batch.cb?.();
             });

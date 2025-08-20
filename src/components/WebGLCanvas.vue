@@ -130,7 +130,7 @@ ResourceLoader.Instance.Enqueue(
           monitor.value!,
           0,
           0.3,
-          -0.98,
+          -0.9,
           new Euler(0, 180 * MathUtils.DEG2RAD, 0),
           0.001
         );
@@ -138,6 +138,7 @@ ResourceLoader.Instance.Enqueue(
         AnimationLoop.Subscribe(followCurve);
         AnimationLoop.Subscribe(will);
         AnimationLoop.Subscribe(pc);
+        pc.root?.scene.scale.addScalar(-0.9);
         AnimationLoop.Instance.scene.add(new AmbientLight(0xffffff, 8));
         AnimationLoop.Subscribe(carousel);
         AnimationLoop.Subscribe(virtualPage);

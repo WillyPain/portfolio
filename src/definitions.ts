@@ -40,17 +40,22 @@ export const genericGlitchCharacters = [
   "+",
 ];
 
-import pc from "@/assets/models/pc.glb?url";
+import pcNoScreen from "@/assets/models/pc-no-screen.glb?url";
 import typingModelUrl from "@/assets/models/typing.glb?url";
-import brokenScreenVideo from "@/assets/video/broken-screen.mp4?url";
+import redScreenVideo from "@/assets/video/crt.mp4?url";
 import screenVideo from "@/assets/video/screen-1.mp4?url";
 import fingerprintTexture from "@/assets/textures/screen/fingerprints.png?url";
-import smudge from "@/assets/textures/screen/smudges.jpg?url";
+import screenReflextionTexture from "@/assets/textures/screen/reflection.jpg?url";
+
 import type { Texture } from "three";
 import type { GLTF } from "three/examples/jsm/Addons.js";
 
 export const ResourceUrls = {
-  fingerprintTexture: smudge,
+  screenVideo: screenVideo,
+  redScreenVideo: redScreenVideo,
+  fingerprintTexture: fingerprintTexture,
+  screenReflextionTexture: screenReflextionTexture,
+  pc: pcNoScreen,
 } as const;
 
 export type ResourceEntry = {
@@ -74,8 +79,9 @@ export type ResourceType = (typeof ResourceTypes)[keyof typeof ResourceTypes];
 
 export const TestSceneResources: ResourceEntry[] = [
   { url: typingModelUrl, type: ResourceTypes.GLTF },
-  { url: pc, type: ResourceTypes.GLTF },
-  { url: brokenScreenVideo, type: ResourceTypes.Video },
-  { url: screenVideo, type: ResourceTypes.Video },
+  { url: ResourceUrls.pc, type: ResourceTypes.GLTF },
+  { url: ResourceUrls.redScreenVideo, type: ResourceTypes.Video },
+  { url: ResourceUrls.screenVideo, type: ResourceTypes.Video },
   { url: ResourceUrls.fingerprintTexture, type: ResourceTypes.Texture },
+  { url: ResourceUrls.screenReflextionTexture, type: ResourceTypes.Texture },
 ];

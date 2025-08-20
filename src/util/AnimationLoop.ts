@@ -38,12 +38,10 @@ export class AnimationLoop {
 
     // Setup WebGL Canvas
     const aspectRatio = window.innerWidth / window.innerHeight;
-    const canvasWidth = 640;
-    this._renderer = new WebGLRenderer({
-      alpha: true,
-      premultipliedAlpha: false,
-      powerPreference: "high-performance",
-    });
+    // Looks great at 640x but does look great with the virtual canvas...
+    // Will need to tweak the grapghics later
+    const canvasWidth = window.innerWidth / 2;
+    this._renderer = new WebGLRenderer();
     this._renderer.setSize(canvasWidth, canvasWidth * aspectRatio, false);
     this._renderer.setClearColor(0x000000, 0.0);
     this._renderer.outputColorSpace = SRGBColorSpace;
