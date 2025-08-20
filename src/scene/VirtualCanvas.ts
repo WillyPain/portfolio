@@ -1,12 +1,13 @@
 import { AnimationLoop, type SceneThing } from "@/util/AnimationLoop";
 import {
+  AlwaysStencilFunc,
   DoubleSide,
   Euler,
   Mesh,
-  MeshLambertMaterial,
-  NoBlending,
+  MeshPhongMaterial,
   Object3D,
   PlaneGeometry,
+  ReplaceStencilOp,
   type Scene,
 } from "three";
 import { CSS3DObject } from "three/examples/jsm/Addons.js";
@@ -27,22 +28,24 @@ export class VirtualCanvas implements SceneThing {
     canvas.style.zIndex = "-1";
     this.canvas = new CSS3DObject(canvas);
 
-    // Create GL plane
-    const material = new MeshLambertMaterial({
-      // color: 0x000000,
+    new MeshPhongMaterial({});
+    const material = new MeshPhongMaterial({
+      color: "white",
+      colorWrite: false,
       opacity: 0,
-      transparent: true,
+      stencilWrite: true,
+      stencilRef: 1,
+      stencilFunc: AlwaysStencilFunc,
+      stencilZPass: ReplaceStencilOp,
       side: DoubleSide,
-      blending: NoBlending,
-      // depthTest: true,
-      // depthWrite: true,
     });
 
     // Create plane geometry
-    const geometry = new PlaneGeometry(1.2, 1);
+    const geometry = new PlaneGeometry(1.6, 1.4);
 
     // Create the GL plane mesh
     const mesh = new Mesh(geometry, material);
+    mesh.renderOrder = 0;
     const scaleFactor = 1 / scale;
     mesh.scale.set(1 * scaleFactor, 1 * scaleFactor, 1 * scaleFactor);
 

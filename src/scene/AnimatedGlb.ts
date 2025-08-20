@@ -3,9 +3,12 @@ import {
   AmbientLight,
   AnimationMixer,
   ClampToEdgeWrapping,
+  EqualStencilFunc,
   InterpolateDiscrete,
+  KeepStencilOp,
   Mesh,
   NearestFilter,
+  ReplaceStencilOp,
   Uniform,
   Vector2,
   type Scene,
@@ -74,6 +77,14 @@ export class AnimatedGlb implements SceneThing {
         t.wraps = ClampToEdgeWrapping;
         t.wrapT = ClampToEdgeWrapping;
         t.anisotropy = 1;
+
+        child.material.stencilRef = 2;
+        child.material.stencilWrite = true;
+        child.material.stencilFunc = EqualStencilFunc; // test function
+        child.material.stencilFail = KeepStencilOp;
+        child.material.stencilZFail = KeepStencilOp;
+        child.material.stencilZPass = ReplaceStencilOp;
+        child.renderOrder = 2;
 
         // Hooking into threejs material before its compiled to add the custom vertex and fragment shader
         child.material.onBeforeCompile = (shader: ThreeShader) => {
