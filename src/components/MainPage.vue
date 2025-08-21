@@ -25,11 +25,11 @@
   <div ref="carouselStuff">
     <!-- carousel stuff goes here -->
   </div>
-  <div ref="monitor" class="p-0 m-0">
+  <div v-show="loaded" ref="monitor" class="p-0 m-0">
     <monitor-page></monitor-page>
   </div>
 
-  <overlay-buttons></overlay-buttons>
+  <overlay-buttons v-show="loaded"></overlay-buttons>
 </template>
 
 <script setup lang="ts">
