@@ -1,4 +1,4 @@
-import type { SceneThing } from "@/util/AnimationLoop";
+import type { AnimationLoopSubscriber } from "@/util/AnimationLoop";
 import {
   AdditiveBlending,
   DoubleSide,
@@ -13,7 +13,7 @@ import { ResourceLoader } from "@/util/ResourceLoader";
 import { ResourceUrls } from "@/definitions";
 import { DEG2RAD } from "three/src/math/MathUtils.js";
 
-export class Monitor implements SceneThing {
+export class Monitor implements AnimationLoopSubscriber {
   init(scene: Scene): void {
     const glitchyVid = ResourceLoader.Get<HTMLVideoElement>(
       ResourceUrls.redScreenVideo

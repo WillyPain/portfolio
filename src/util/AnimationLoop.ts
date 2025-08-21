@@ -3,7 +3,7 @@ import { CameraController } from "./CameraController";
 import { CSS2DRenderer, CSS3DRenderer } from "three/examples/jsm/Addons.js";
 
 //todo: cant think of name yet
-export interface SceneThing {
+export interface AnimationLoopSubscriber {
   init(scene: Scene): void;
   update(delta: number): void;
   cleanup(scene: Scene): void;
@@ -25,7 +25,7 @@ export class AnimationLoop {
   private _css3dRenderer: CSS3DRenderer = new CSS3DRenderer();
   private _css2dRenderer: CSS2DRenderer = new CSS2DRenderer();
   private _clock: Clock = new Clock();
-  private _handlers: SceneThing[] = [];
+  private _handlers: AnimationLoopSubscriber[] = [];
 
   private constructor() {
     // Setup CSS3D Canvas
@@ -38,7 +38,7 @@ export class AnimationLoop {
 
     // Setup WebGL Canvas
     const aspectRatio = window.innerWidth / window.innerHeight;
-    // Looks great at 640x but does look great with the virtual canvas...
+    // Looks great at 640x but doesn't look great with the virtual canvas...
     // Will need to tweak the grapghics later
     const canvasWidth = window.innerWidth / 2;
     this._renderer = new WebGLRenderer();
@@ -48,7 +48,7 @@ export class AnimationLoop {
     this._renderer.domElement.style.position = "absolute";
     this._renderer.domElement.style.imageRendering = "pixelated";
     this._renderer.domElement.style.pointerEvents = "none";
-    this._renderer.domElement.style.zIndex = "1px";
+    this._renderer.domElement.style.zIndex = "1";
 
     // Setup CSS2D Canvas
     this._css2dRenderer.setSize(window.innerWidth, window.innerHeight);
@@ -100,7 +100,7 @@ export class AnimationLoop {
     return this.Instance._css2dRenderer;
   }
 
-  public static Subscribe(handler: SceneThing) {
+  public static Subscribe(handler: AnimationLoopSubscriber) {
     this.Instance._handlers.push(handler);
   }
 

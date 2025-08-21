@@ -1,4 +1,4 @@
-import type { SceneThing } from "@/util/AnimationLoop";
+import type { AnimationLoopSubscriber as AnimationLoopSubscriber } from "@/util/AnimationLoop";
 import {
   CatmullRomCurve3,
   MathUtils,
@@ -10,7 +10,7 @@ import {
 import heroToComputer from "@/assets/curves/hero-to-computer.json?raw";
 import { CameraController } from "@/util/CameraController";
 
-export class FollowCurve implements SceneThing {
+export class FollowCurve implements AnimationLoopSubscriber {
   curve: CatmullRomCurve3 | undefined;
 
   root: Object3D = new Object3D();

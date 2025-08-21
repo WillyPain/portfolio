@@ -47,7 +47,7 @@ import screenVideo from "@/assets/video/screen-1.mp4?url";
 import fingerprintTexture from "@/assets/textures/screen/fingerprints.png?url";
 import screenReflextionTexture from "@/assets/textures/screen/reflection.jpg?url";
 
-import type { Texture } from "three";
+import { Uniform, Vector2, type Texture } from "three";
 import type { GLTF } from "three/examples/jsm/Addons.js";
 
 export const ResourceUrls = {
@@ -56,6 +56,7 @@ export const ResourceUrls = {
   fingerprintTexture: fingerprintTexture,
   screenReflextionTexture: screenReflextionTexture,
   pc: pcNoScreen,
+  typing: typingModelUrl,
 } as const;
 
 export type ResourceEntry = {
@@ -78,10 +79,29 @@ export const ResourceTypes = {
 export type ResourceType = (typeof ResourceTypes)[keyof typeof ResourceTypes];
 
 export const TestSceneResources: ResourceEntry[] = [
-  { url: typingModelUrl, type: ResourceTypes.GLTF },
+  { url: ResourceUrls.typing, type: ResourceTypes.GLTF },
   { url: ResourceUrls.pc, type: ResourceTypes.GLTF },
   { url: ResourceUrls.redScreenVideo, type: ResourceTypes.Video },
   { url: ResourceUrls.screenVideo, type: ResourceTypes.Video },
   { url: ResourceUrls.fingerprintTexture, type: ResourceTypes.Texture },
   { url: ResourceUrls.screenReflextionTexture, type: ResourceTypes.Texture },
 ];
+
+export class Ps1ShaderUniforms {
+  [key: string]: Uniform;
+  uEnableVertexSnap = new Uniform(true);
+  uVertexSnap = new Uniform(0.009);
+  uColorDepth = new Uniform(40);
+  uDithering = new Uniform(0);
+  uAffineIntensity = new Uniform(1);
+  uPixelation = new Uniform(512);
+  uMousePosition = new Uniform(new Vector2(0, 0));
+}
+
+export interface ThreeShader {
+  vertexShader: string;
+  fragmentShader: string;
+  uniforms: {
+    [key: string]: Uniform;
+  };
+}

@@ -1,4 +1,7 @@
-import { AnimationLoop, type SceneThing } from "@/util/AnimationLoop";
+import {
+  AnimationLoop,
+  type AnimationLoopSubscriber,
+} from "@/util/AnimationLoop";
 import {
   AlwaysStencilFunc,
   DoubleSide,
@@ -12,7 +15,7 @@ import {
 } from "three";
 import { CSS3DObject } from "three/examples/jsm/Addons.js";
 
-export class VirtualCanvas implements SceneThing {
+export class VirtualCanvas implements AnimationLoopSubscriber {
   root = new Object3D();
   cssRoot = new Object3D();
   canvas: CSS3DObject;

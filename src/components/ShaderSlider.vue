@@ -73,7 +73,6 @@ import { watch, ref } from "vue";
 import InputPanel from "./InputPanel.vue";
 import type { Uniform } from "three";
 
-// Props: shader uniforms object
 const props = defineProps<{
   uniforms: {
     uVertexSnap: Uniform;
@@ -94,7 +93,6 @@ function update() {
   emit("updateUniforms", props.uniforms);
 }
 
-// Wiring up input values
 const uniforms = props.uniforms;
 const vertexSnap = ref(uniforms.uVertexSnap.value);
 const colorDepth = ref(uniforms.uColorDepth.value);

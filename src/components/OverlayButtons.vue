@@ -2,9 +2,9 @@
   <div class="fixed inset-0 pointer-events-none">
     <!-- Bottom left buttons -->
     <div class="absolute bottom-4 left-4 flex gap-10 pointer-events-auto">
-      <button class="text-white rounded-none">SMORF</button>
-      <button class="text-white">SAVE</button>
-      <button class="text-white">EXIT</button>
+      <button class="text-white">BUTTON 1</button>
+      <button class="text-white">BUTTON 1</button>
+      <button class="text-white">BUTTON 1</button>
     </div>
 
     <!-- Top right PNG -->

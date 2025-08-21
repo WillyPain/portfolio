@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WebGLCanvas from "./components/WebGLCanvas.vue";
+import WebGLCanvas from "./components/MainPage.vue";
 import gsap from "gsap";
 import { ScrambleTextPlugin, ScrollTrigger } from "gsap/all";
 import SplitText from "gsap/SplitText";

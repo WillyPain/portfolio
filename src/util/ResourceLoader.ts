@@ -22,8 +22,6 @@ class ResourceBatch {
   }
 }
 
-// Can add functionality later
-// seems like we're just loading gltf files atm
 export class ResourceLoader {
   constructor() {}
 
@@ -35,7 +33,6 @@ export class ResourceLoader {
     return (this._instance ??= new ResourceLoader());
   }
 
-  // need better name
   Enqueue(
     priority: number = Number.MAX_SAFE_INTEGER,
     cb?: DownloadedCallback,
@@ -54,7 +51,6 @@ export class ResourceLoader {
     this.downloadQueue.push(new ResourceBatch(priority, cb, ...newResources));
   }
 
-  // need better name
   LoadResources() {
     const gltfLoader = new GLTFLoader();
     const textureLoader = new TextureLoader();
@@ -79,9 +75,9 @@ export class ResourceLoader {
             const video = document.createElement<"video">("video");
             video.src = resourceEntry.url;
             video.preload = "auto";
-            video.crossOrigin = "anonymous"; // Important for CORS
+            video.crossOrigin = "anonymous";
             video.loop = true;
-            video.muted = true; // Required for autoplay in most browsers
+            video.muted = true;
 
             video.addEventListener("canplay", () => {
               this.OnDownloaded(resourceEntry.url, video);
