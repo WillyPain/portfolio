@@ -11,7 +11,6 @@ import {
 } from "three";
 import { ResourceLoader } from "@/util/ResourceLoader";
 import { ResourceUrls } from "@/definitions";
-import { DEG2RAD } from "three/src/math/MathUtils.js";
 
 export class Monitor implements AnimationLoopSubscriber {
   init(scene: Scene): void {
@@ -49,14 +48,12 @@ export class Monitor implements AnimationLoopSubscriber {
       transparent: true,
     });
 
-    console.log("additive:", fingerprintMaterial);
-
     const glitchyMaterial = new MeshBasicMaterial({
       map: glitchyTexture,
       alphaMap: glitchyTexture,
       blending: AdditiveBlending,
       side: DoubleSide,
-      opacity: 0.1,
+      opacity: 0.03,
       transparent: true,
     });
 
@@ -65,7 +62,7 @@ export class Monitor implements AnimationLoopSubscriber {
       alphaMap: screenTexture,
       blending: AdditiveBlending,
       side: DoubleSide,
-      opacity: 0.05,
+      opacity: 0.1,
       transparent: true,
     });
 
@@ -83,7 +80,6 @@ export class Monitor implements AnimationLoopSubscriber {
     const screenPlane = new Mesh(geometry, screenMaterial);
     screenPlane.position.set(0, 0.35, -1.01);
 
-    fingerprintPlane.rotateY(180 * DEG2RAD);
     scene.add(fingerprintPlane);
     scene.add(reflextionPlane);
     scene.add(glitchyPlane);

@@ -29,7 +29,10 @@
     <monitor-page></monitor-page>
   </div>
 
-  <overlay-buttons v-show="loaded"></overlay-buttons>
+  <overlay-buttons
+    :dispose="disposeScene"
+    :reload="setupScene"
+  ></overlay-buttons>
 </template>
 
 <script setup lang="ts">
@@ -66,59 +69,7 @@ ResourceLoader.Instance.Enqueue(
   () => {
     downloadCount++;
     if (downloadCount == TestSceneResources.length) {
-      nextTick(() => {
-        const children = Array.from(
-          carouselStuff.value!.children
-        ) as HTMLElement[];
-        console.log(children);
-        const carouselSize = 8;
-        const carouselSpeed = 0.5;
-        const carousel = new Css2dCarousel(
-          children,
-          carouselSize,
-          carouselSpeed
-        );
-        loaded.value = true;
-
-        document
-          .getElementById("css2d")
-          ?.appendChild(AnimationLoop.Renderer.domElement);
-        document
-          .getElementById("css3d")
-          ?.appendChild(AnimationLoop.Css3dRenderer.domElement);
-        document
-          .getElementById("webgl")
-          ?.appendChild(AnimationLoop.Renderer.domElement);
-
-        const virtualPage = new VirtualCanvas(
-          monitor.value!,
-          0,
-          0.3,
-          -0.9,
-          new Euler(0, 180 * MathUtils.DEG2RAD, 0),
-          0.001
-        );
-
-        AnimationLoop.Subscribe(followCurve);
-        AnimationLoop.Subscribe(will);
-        AnimationLoop.Subscribe(pc);
-        AnimationLoop.Instance.scene.add(new AmbientLight(0xffffff, 8));
-        AnimationLoop.Subscribe(carousel);
-        AnimationLoop.Subscribe(virtualPage);
-        AnimationLoop.Subscribe(new Monitor());
-        AnimationLoop.Start();
-
-        // shuffle me boys
-        pc.root?.scene.rotateY(180 * MathUtils.DEG2RAD);
-        pc.root?.scene.scale.addScalar(4);
-
-        pc.root!.scene.position.y -= 1.55;
-
-        will.root!.scene.scale.addScalar(4);
-        will.root!.scene.position.y -= 5.1;
-        will.root!.scene.position.z -= 4.8;
-        setupCameraMoveOnScroll();
-      });
+      setupScene();
     }
   },
   ...TestSceneResources
@@ -131,7 +82,6 @@ onMounted(() => {
   AnimationLoop.Subscribe({
     update: () => stats.update(),
     init: () => null,
-    cleanup: () => null,
   });
 
   document.addEventListener("mousemove", (e) => {
@@ -143,6 +93,55 @@ onMounted(() => {
     });
   });
 });
+
+function setupScene() {
+  nextTick(() => {
+    const children = Array.from(carouselStuff.value!.children) as HTMLElement[];
+    const carouselSize = 8;
+    const carouselSpeed = 0.5;
+    const carousel = new Css2dCarousel(children, carouselSize, carouselSpeed);
+    loaded.value = true;
+
+    document
+      .getElementById("css2d")
+      ?.appendChild(AnimationLoop.Renderer.domElement);
+    document
+      .getElementById("css3d")
+      ?.appendChild(AnimationLoop.Css3dRenderer.domElement);
+    document
+      .getElementById("webgl")
+      ?.appendChild(AnimationLoop.Renderer.domElement);
+
+    const virtualPage = new VirtualCanvas(
+      monitor.value!,
+      0,
+      0.3,
+      -0.9,
+      new Euler(0, 180 * MathUtils.DEG2RAD, 0),
+      0.001
+    );
+
+    AnimationLoop.Subscribe(followCurve);
+    AnimationLoop.Subscribe(will);
+    AnimationLoop.Subscribe(pc);
+    AnimationLoop.Instance.scene.add(new AmbientLight(0xffffff, 8));
+    AnimationLoop.Subscribe(carousel);
+    AnimationLoop.Subscribe(virtualPage);
+    AnimationLoop.Subscribe(new Monitor());
+    AnimationLoop.Start();
+
+    // shuffle me boys
+    pc.root?.scene.rotateY(180 * MathUtils.DEG2RAD);
+    pc.root?.scene.scale.addScalar(4);
+
+    pc.root!.scene.position.y -= 1.55;
+
+    will.root!.scene.scale.addScalar(4);
+    will.root!.scene.position.y -= 5.1;
+    will.root!.scene.position.z -= 4.8;
+    setupCameraMoveOnScroll();
+  });
+}
 
 function setupCameraMoveOnScroll() {
   gsap.to(dummy, {
@@ -161,8 +160,13 @@ function setupCameraMoveOnScroll() {
 }
 
 onUnmounted(() => {
-  AnimationLoop.Stop();
+  disposeScene();
 });
+
+function disposeScene() {
+  loaded.value = false;
+  AnimationLoop.Stop();
+}
 </script>
 
 <style>

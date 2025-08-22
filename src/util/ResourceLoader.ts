@@ -3,8 +3,12 @@ import {
   type MediaResource,
   type ResourceEntry,
 } from "@/definitions";
-import { SRGBColorSpace, TextureLoader } from "three";
-import { GLTFLoader } from "three/examples/jsm/Addons.js";
+import { Group, SRGBColorSpace, TextureLoader } from "three";
+import {
+  GLTFLoader,
+  SkeletonUtils,
+  type GLTF,
+} from "three/examples/jsm/Addons.js";
 
 type DownloadedCallback = () => void;
 class ResourceBatch {
@@ -107,13 +111,26 @@ export class ResourceLoader {
     }
   }
 
-  OnDownloaded(url: string, file: MediaResource | null) {
-    this.resources.set(url, file);
+  OnDownloaded(url: string, resource: MediaResource | null) {
+    this.resources.set(url, resource);
   }
 
   // possibly dont event need this method? accessing resource by URL should be cached by browser?
   static Get<T extends MediaResource | null | undefined>(url: string): T {
     const resource = this.Instance.resources.get(url);
+    if ((resource as GLTF).scene) {
+      const gltf = resource as GLTF;
+      const copiedGltf: GLTF = {
+        scene: new Group().add(SkeletonUtils.clone(gltf.scene)),
+        animations: gltf.animations,
+        scenes: gltf.scenes,
+        cameras: gltf.cameras,
+        userData: gltf.userData,
+        asset: gltf.asset,
+        parser: gltf.parser,
+      };
+      return copiedGltf as T;
+    }
     return resource as T;
   }
 }

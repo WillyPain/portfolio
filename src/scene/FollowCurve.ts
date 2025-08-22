@@ -59,7 +59,6 @@ export class FollowCurve implements AnimationLoopSubscriber {
       points.push(new Vector3(x, y, z));
     }
     this.dummyPoints = points;
-    console.log(this.dummyPoints);
     const curve = new CatmullRomCurve3(points);
     curve.closed = json.closed;
 

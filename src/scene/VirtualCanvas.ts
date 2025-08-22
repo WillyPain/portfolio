@@ -27,7 +27,6 @@ export class VirtualCanvas implements AnimationLoopSubscriber {
     euler = new Euler(),
     scale = 1
   ) {
-    console.log(canvas);
     canvas.style.zIndex = "-1";
     this.canvas = new CSS3DObject(canvas);
 

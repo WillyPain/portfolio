@@ -1,7 +1,13 @@
-import { Clock, Scene, SRGBColorSpace, WebGLRenderer } from "three";
+import {
+  Clock,
+  Object3D,
+  Scene,
+  SRGBColorSpace,
+  WebGLRenderer,
+  type Object3DEventMap,
+} from "three";
 import { CameraController } from "./CameraController";
 import { CSS2DRenderer, CSS3DRenderer } from "three/examples/jsm/Addons.js";
-import { render } from "vue";
 
 //todo: cant think of name yet
 export interface AnimationLoopSubscriber {
@@ -71,10 +77,7 @@ export class AnimationLoop {
       this._css2dRenderer.domElement.style.pointerEvents = "none";
       const hit = document.elementFromPoint(e.clientX, e.clientY);
       if (hit && hit.id !== "css3d" && hit.id !== "monitor") {
-        console.log(hit);
         hit?.dispatchEvent(new PointerEvent("css3d", e));
-      } else {
-        console.log("damn it");
       }
       this._css2dRenderer.domElement.style.pointerEvents = "auto";
     });
@@ -135,8 +138,26 @@ export class AnimationLoop {
 
   private _stop() {
     this._handlers = [];
-    this._renderer.dispose();
+    this._clock.stop();
+
+    this.dispose(this.scene.children);
     this.scene.clear();
+
+    this.dispose(this.cssScene.children);
     this.cssScene.clear();
+
+    this._renderer.render(this.scene, CameraController.MainCamera!);
+    this._renderer.dispose();
+    this._renderer.setAnimationLoop(null);
+
+    console.log("after cleanup:", this.scene);
+  }
+
+  // lights arent being disposed of
+  dispose(children: Object3D<Object3DEventMap>[]) {
+    children.forEach((c) => {
+      this.dispose(c.children);
+      c.removeFromParent();
+    });
   }
 }
