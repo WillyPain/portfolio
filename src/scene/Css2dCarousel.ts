@@ -48,8 +48,4 @@ export class Css2dCarousel implements AnimationLoopSubscriber {
     // implement rotation logic here
     this.root.rotateZ(delta * -this.speed);
   }
-
-  cleanup(scene: Scene): void {
-    scene.remove(this.root);
-  }
 }

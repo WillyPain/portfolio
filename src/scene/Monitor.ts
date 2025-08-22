@@ -89,6 +89,6 @@ export class Monitor implements AnimationLoopSubscriber {
     scene.add(glitchyPlane);
     scene.add(screenPlane);
   }
+
   update(delta: number): void {}
-  cleanup(scene: Scene): void {}
 }

@@ -70,6 +70,4 @@ export class VirtualCanvas implements AnimationLoopSubscriber {
   }
 
   update(delta: number): void {}
-
-  cleanup(scene: Scene): void {}
 }

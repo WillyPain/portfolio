@@ -1,12 +1,12 @@
 import { Clock, Scene, SRGBColorSpace, WebGLRenderer } from "three";
 import { CameraController } from "./CameraController";
 import { CSS2DRenderer, CSS3DRenderer } from "three/examples/jsm/Addons.js";
+import { render } from "vue";
 
 //todo: cant think of name yet
 export interface AnimationLoopSubscriber {
   init(scene: Scene): void;
   update(delta: number): void;
-  cleanup(scene: Scene): void;
 }
 
 export class AnimationSettings {
@@ -134,7 +134,9 @@ export class AnimationLoop {
   }
 
   private _stop() {
-    this._handlers.forEach((h) => h.cleanup(this.scene));
     this._handlers = [];
+    this._renderer.dispose();
+    this.scene.clear();
+    this.cssScene.clear();
   }
 }

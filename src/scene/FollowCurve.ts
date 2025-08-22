@@ -79,6 +79,4 @@ export class FollowCurve implements AnimationLoopSubscriber {
       CameraController.MainCamera?.lookAt(new Vector3(t.x, t.y, t.z));
     }
   }
-
-  cleanup(scene: Scene): void {}
 }
