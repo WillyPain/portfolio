@@ -2,9 +2,14 @@ in vec3 vNormal;
 in vec3 vWorldPosition;
 
 void main() {
+    vec3 dist = cameraPosition - vWorldPosition;
     vec3 N = normalize(vNormal);
-    vec3 V = normalize(cameraPosition - vWorldPosition);
-    float spec = max(abs(dot(V, N)), 0.2);
+    vec3 V = normalize(dist);
+
+    float angleRatio = abs(dot(V, N));
+    float steepening = 10.0 / (1.0 / length(dist));
     
-    gl_FragColor = vec4(.2, .2, .2, 1.0 - spec);
+    float visibility = max(pow(steepening, angleRatio) / steepening, 0.4);
+    
+    gl_FragColor = vec4(0, 0, 0, 1.0 - visibility);
 }

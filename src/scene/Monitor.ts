@@ -65,13 +65,14 @@ export class Monitor implements AnimationLoopSubscriber {
       alphaMap: screenTexture,
       blending: AdditiveBlending,
       side: DoubleSide,
-      opacity: 0.1,
+      opacity: 0.02,
       transparent: true,
     });
 
     const viewingAngleMaterial = new ShaderMaterial({
       vertexShader: viewingAngleVertexShader,
       fragmentShader: viewingAngleFragmentShader,
+      blending: AdditiveBlending,
       side: DoubleSide,
       transparent: true,
     });

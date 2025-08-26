@@ -1,7 +1,7 @@
 <template>
   <div
     id="monitor"
-    class="w-[120vh] h-[100vh] overflow-auto bg-blue text-emerald-300 relative p-50"
+    class="w-[120vh] h-[100vh] overflow-auto text-emerald-300 relative p-50"
   >
     <div class="scrollTarget"></div>
     <div class="flex gap-0.5 justify-center">
