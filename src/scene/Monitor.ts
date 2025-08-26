@@ -5,12 +5,15 @@ import {
   Mesh,
   MeshBasicMaterial,
   PlaneGeometry,
+  ShaderMaterial,
   Texture,
   VideoTexture,
   type Scene,
 } from "three";
 import { ResourceLoader } from "@/util/ResourceLoader";
 import { ResourceUrls } from "@/definitions";
+import viewingAngleVertexShader from "@/assets/shaders/viewing-angle-vertex-shader.glsl?raw";
+import viewingAngleFragmentShader from "@/assets/shaders/viewing-angle-fragment-shader.glsl?raw";
 
 export class Monitor implements AnimationLoopSubscriber {
   init(scene: Scene): void {
@@ -66,24 +69,36 @@ export class Monitor implements AnimationLoopSubscriber {
       transparent: true,
     });
 
-    const geometry = new PlaneGeometry(1.1, 1);
+    const viewingAngleMaterial = new ShaderMaterial({
+      vertexShader: viewingAngleVertexShader,
+      fragmentShader: viewingAngleFragmentShader,
+      side: DoubleSide,
+      transparent: true,
+    });
+
+    const geometry = new PlaneGeometry(1.25, 1);
+    const planeHeight = 0.34;
 
     const fingerprintPlane = new Mesh(geometry, fingerprintMaterial);
-    fingerprintPlane.position.set(0, 0.35, -1.1);
+    fingerprintPlane.position.set(0, planeHeight, -1.03);
 
     const reflextionPlane = new Mesh(geometry, reflextionMaterial);
-    reflextionPlane.position.set(0, 0.35, -1.02);
+    reflextionPlane.position.set(0, planeHeight, -1.02);
 
     const glitchyPlane = new Mesh(geometry, glitchyMaterial);
-    glitchyPlane.position.set(0, 0.35, -1);
+    glitchyPlane.position.set(0, planeHeight, -1);
 
     const screenPlane = new Mesh(geometry, screenMaterial);
-    screenPlane.position.set(0, 0.35, -1.01);
+    screenPlane.position.set(0, planeHeight, -1.01);
+
+    const viewingAnglePlane = new Mesh(geometry, viewingAngleMaterial);
+    viewingAnglePlane.position.set(0, planeHeight, -1.025);
 
     scene.add(fingerprintPlane);
     scene.add(reflextionPlane);
     scene.add(glitchyPlane);
     scene.add(screenPlane);
+    scene.add(viewingAnglePlane);
   }
 
   update(delta: number): void {}
