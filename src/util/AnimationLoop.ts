@@ -63,24 +63,6 @@ export class AnimationLoop {
     this._css2dRenderer.domElement.style.transformStyle = "preserve-3d";
     this._css2dRenderer.domElement.style.zIndex = "-1";
     // next the css3d renderer inside the css2d renderer... (this is getting stinky)
-
-    // Setup pointer event handling
-    this._css2dRenderer.domElement.addEventListener("mousemove", (e) => {
-      this._css3dRenderer.domElement.dispatchEvent(new PointerEvent(e.type, e));
-    });
-
-    this._renderer.domElement.addEventListener("mousemove", (e) => {
-      this._css3dRenderer.domElement.dispatchEvent(new PointerEvent(e.type, e));
-    });
-
-    this._css3dRenderer.domElement.addEventListener("mousemove", (e) => {
-      this._css2dRenderer.domElement.style.pointerEvents = "none";
-      const hit = document.elementFromPoint(e.clientX, e.clientY);
-      if (hit && hit.id !== "css3d" && hit.id !== "monitor") {
-        hit?.dispatchEvent(new PointerEvent("css3d", e));
-      }
-      this._css2dRenderer.domElement.style.pointerEvents = "auto";
-    });
   }
 
   public static _instance: AnimationLoop;
