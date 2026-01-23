@@ -1,9 +1,38 @@
 <template>
+  <div id="planet_hopper_screen" class="text-yellow-300" width="1000px">
+    <game-player-component
+      v-if="animationLoopRunning"
+      iframe-url="/planet_hopper/index.html"
+      screen-id="planet_hopper_screen"
+    ></game-player-component>
+  </div>
+  <div id="patty_whack_screen" class="text-yellow-300" width="1000px">
+    <game-player-component
+      v-if="animationLoopRunning"
+      iframe-url="/patty_whack/index.html"
+      screen-id="patty_whack_screen"
+    ></game-player-component>
+  </div>
+  <div id="computer_screen">
+    <monitor-page v-if="animationLoopRunning"></monitor-page>
+  </div>
+  <div id="spotify-iframe">
+    <iframe
+      data-testid="embed-iframe"
+      style="border-radius: 12px"
+      src="https://open.spotify.com/embed/album/0WaAcd3t5hKurXiQ3IqmhT?utm_source=generator"
+      width="100%"
+      height="100"
+      frameBorder="0"
+      allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+      loading="lazy"
+    ></iframe>
+  </div>
+
   <div class="scrollTarget"></div>
-  <div id="css2d"></div>
   <div id="css3d"></div>
   <div id="webgl"></div>
-  <div v-show="loaded" class="flex flex-row justify-center">
+  <div class="flex flex-row justify-center">
     <div class="relative terminal-panel flex flex-col text-center">
       <scramble-text-label
         :text="`****************`"
@@ -23,10 +52,14 @@
     </div>
   </div>
   <div ref="carouselStuff">
-    <!-- carousel stuff goes here -->
-  </div>
-  <div v-show="loaded" ref="monitor" class="p-0 m-0">
-    <monitor-page></monitor-page>
+    <p id="apple">😼</p>
+    <p>🔥</p>
+    <p>👄</p>
+    <p>💦</p>
+    <p>😼</p>
+    <p>🔥</p>
+    <p>👄</p>
+    <p>💦</p>
   </div>
 
   <overlay-buttons
@@ -36,45 +69,42 @@
 </template>
 
 <script setup lang="ts">
-import ScrambleTextLabel from "./ScrambleTextLabel.vue";
 import MonitorPage from "./MonitorPage.vue";
+import ScrambleTextLabel from "./ScrambleTextLabel.vue";
 import { AnimationLoop } from "@/util/AnimationLoop";
 import { nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
-import { ResourceLoader } from "@/util/ResourceLoader";
-import { TestSceneResources } from "@/definitions";
+import {
+  Ps1ShaderUniforms,
+  ResourceUrls,
+  TestSceneResources,
+} from "@/definitions";
 import { Ps1Glb } from "@/scene/Ps1Glb";
 import gsap from "gsap";
 import Stats from "three/examples/jsm/libs/stats.module.js";
-import { Css2dCarousel } from "@/scene/Css2dCarousel";
 import OverlayButtons from "./OverlayButtons.vue";
-import { FollowCurve } from "@/scene/FollowCurve";
-import { AmbientLight, Euler, MathUtils } from "three";
-import { VirtualCanvas } from "@/scene/VirtualCanvas";
-import { Monitor } from "@/scene/Monitor";
+import { CameraTrack } from "@/scene/FollowCurve";
+import { Skater } from "@/scene/Skater";
+import { Boombox } from "@/scene/Boombox";
+import GamePlayerComponent from "./GamePlayerComponent.vue";
+import { CameraController } from "@/util/CameraController";
+import { SceneTracker } from "@/util/SceneTracker";
+import { PointLight } from "three";
+import { PlaneToDecalConverter } from "@/scene/PlaneToDecalConverter";
 
-const monitor = ref<HTMLElement | null>(null);
+const animationLoopRunning = AnimationLoop.Running;
 const carouselStuff = ref<HTMLDivElement | null>(null);
-const followCurve = new FollowCurve();
+const followCurve = new CameraTrack();
+const boombox = new Boombox();
 const will = new Ps1Glb(TestSceneResources[0].url);
-const pc = new Ps1Glb(TestSceneResources[1].url);
+const crib = new Ps1Glb(ResourceUrls.crib);
+const sk8r = new Skater();
+
+const cribUniforms = reactive(crib.uniforms);
 const uniforms = reactive(will.uniforms);
-let downloadCount = 0;
-const loaded = ref(false);
 
-followCurve.lookAtTarget = () => pc.root?.scene.children[0];
+followCurve.lookAtTarget = () => sk8r.cat.root?.scene;
 const dummy = { t: 0 };
-
-ResourceLoader.Instance.Enqueue(
-  0,
-  () => {
-    downloadCount++;
-    if (downloadCount == TestSceneResources.length) {
-      setupScene();
-    }
-  },
-  ...TestSceneResources
-);
-ResourceLoader.Instance.LoadResources();
+const ps1UniformDummy = { t: 0 };
 
 onMounted(() => {
   const stats = new Stats();
@@ -92,19 +122,15 @@ onMounted(() => {
       ease: "power2.out",
     });
   });
+
+  setupScene();
 });
 
 function setupScene() {
   nextTick(() => {
-    const children = Array.from(carouselStuff.value!.children) as HTMLElement[];
-    const carouselSize = 8;
-    const carouselSpeed = 0.5;
-    const carousel = new Css2dCarousel(children, carouselSize, carouselSpeed);
-    loaded.value = true;
-
     document
       .getElementById("css2d")
-      ?.appendChild(AnimationLoop.Renderer.domElement);
+      ?.appendChild(AnimationLoop.Css2dRenderer.domElement);
     document
       .getElementById("css3d")
       ?.appendChild(AnimationLoop.Css3dRenderer.domElement);
@@ -112,34 +138,69 @@ function setupScene() {
       .getElementById("webgl")
       ?.appendChild(AnimationLoop.Renderer.domElement);
 
-    const virtualPage = new VirtualCanvas(
-      monitor.value!,
-      0,
-      0.3,
-      -0.9,
-      new Euler(0, 180 * MathUtils.DEG2RAD, 0),
-      0.001
-    );
-
+    AnimationLoop.Subscribe(CameraController.Instanace);
     AnimationLoop.Subscribe(followCurve);
+    AnimationLoop.Subscribe(crib);
+    AnimationLoop.Subscribe(sk8r);
     AnimationLoop.Subscribe(will);
-    AnimationLoop.Subscribe(pc);
-    AnimationLoop.Instance.scene.add(new AmbientLight(0xffffff, 8));
-    AnimationLoop.Subscribe(carousel);
-    AnimationLoop.Subscribe(virtualPage);
-    AnimationLoop.Subscribe(new Monitor());
+    AnimationLoop.Subscribe(boombox);
+    AnimationLoop.Subscribe(new PlaneToDecalConverter());
     AnimationLoop.Start();
 
-    // shuffle me boys
-    pc.root?.scene.rotateY(180 * MathUtils.DEG2RAD);
-    pc.root?.scene.scale.addScalar(4);
+    const rocket = SceneTracker.Find("Rocket")?.[0];
+    const rocketLight = new PointLight(0xffffff, 1);
+    rocketLight.position.setZ(4);
+    rocket?.add(rocketLight);
 
-    pc.root!.scene.position.y -= 1.55;
+    sk8r.cat.root?.scene.scale.multiplyScalar(2);
+    sk8r.cat.root!.scene.position.z += 1;
 
-    will.root!.scene.scale.addScalar(4);
-    will.root!.scene.position.y -= 5.1;
-    will.root!.scene.position.z -= 4.8;
     setupCameraMoveOnScroll();
+
+    cribUniforms.uVertexSnap.value = 0.2;
+    cribUniforms.uColorDepth.value = 1;
+    cribUniforms.uPixelation.value = 1;
+    const refUniforms = new Ps1ShaderUniforms();
+    gsap.fromTo(
+      ps1UniformDummy,
+      { t: 0.1 },
+      {
+        t: 1,
+        duration: 1.5,
+        delay: 0.5,
+        ease: "power2.in",
+        onUpdate() {
+          cribUniforms.uColorDepth.value = Math.min(
+            refUniforms.uColorDepth.value * ps1UniformDummy.t,
+            refUniforms.uColorDepth.value
+          );
+          cribUniforms.uPixelation.value = Math.min(
+            refUniforms.uPixelation.value * ps1UniformDummy.t,
+            refUniforms.uPixelation.value
+          );
+        },
+      }
+    );
+    gsap.fromTo(
+      ps1UniformDummy,
+      { t: 1 },
+      {
+        t: 0,
+        duration: 2,
+        delay: 0.5,
+        ease: "expo.in",
+        onUpdate() {
+          cribUniforms.uVertexSnap.value = Math.max(
+            ps1UniformDummy.t,
+            refUniforms.uVertexSnap.value
+          );
+          cribUniforms.uDithering.value = Math.max(
+            ps1UniformDummy.t,
+            refUniforms.uDithering.value
+          );
+        },
+      }
+    );
   });
 }
 
@@ -164,7 +225,6 @@ onUnmounted(() => {
 });
 
 function disposeScene() {
-  loaded.value = false;
   AnimationLoop.Stop();
 }
 </script>
@@ -172,7 +232,8 @@ function disposeScene() {
 <style>
 /* Full viewport canavs and place it behind UI */
 #webgl,
-#css3d {
+#css3d,
+#css2d {
   position: fixed;
   top: 0;
   left: 0;
@@ -180,8 +241,7 @@ function disposeScene() {
   height: 100vh;
   overflow: hidden;
 }
-#webgl canvas,
-#css3d canvas {
+#webgl canvas {
   width: 100%;
   height: 100%;
   display: block;

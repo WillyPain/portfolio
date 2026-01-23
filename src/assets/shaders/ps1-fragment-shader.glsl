@@ -1,4 +1,4 @@
-//FRAGMENT SHADER
+// FRAGMENT SHADER
 #define STANDARD
 #ifdef PHYSICAL
     #define IOR

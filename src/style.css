@@ -77,6 +77,14 @@ button:focus-visible {
 }
 
 @font-face {
+  font-family: 'DOSVreJP12';
+  src: url('./assets/font/DOS/DOS-V_re_JPN12.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Unispace';
   src: url('./assets/font/unispace/unispace-regular.otf') format('opentype');
   font-weight: normal;

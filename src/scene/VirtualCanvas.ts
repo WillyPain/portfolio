@@ -1,7 +1,4 @@
-import {
-  AnimationLoop,
-  type AnimationLoopSubscriber,
-} from "@/util/AnimationLoop";
+import { type AnimationLoopSubscriber } from "@/util/AnimationLoop";
 import {
   AlwaysStencilFunc,
   DoubleSide,
@@ -16,7 +13,6 @@ import {
 import { CSS3DObject } from "three/examples/jsm/Addons.js";
 
 export class VirtualCanvas implements AnimationLoopSubscriber {
-  root = new Object3D();
   cssRoot = new Object3D();
   canvas: CSS3DObject;
   constructor(
@@ -29,9 +25,15 @@ export class VirtualCanvas implements AnimationLoopSubscriber {
   ) {
     canvas.style.zIndex = "-1";
     this.canvas = new CSS3DObject(canvas);
+    this.cssRoot.add(this.canvas);
 
-    new MeshPhongMaterial({});
-    const material = new MeshPhongMaterial({
+    this.cssRoot.position.set(x, y, z);
+    this.cssRoot.setRotationFromEuler(euler);
+    this.cssRoot.scale.set(scale, scale, scale);
+
+    const canvasRect = canvas.getBoundingClientRect();
+    const geometry = new PlaneGeometry(canvasRect.width, canvasRect.height);
+    const occlusionMaterial = new MeshPhongMaterial({
       color: "white",
       colorWrite: false,
       opacity: 0,
@@ -41,32 +43,14 @@ export class VirtualCanvas implements AnimationLoopSubscriber {
       stencilZPass: ReplaceStencilOp,
       side: DoubleSide,
     });
-
-    // Create plane geometry
-    const geometry = new PlaneGeometry(1.6, 1.4);
-
-    // Create the GL plane mesh
-    const mesh = new Mesh(geometry, material);
-    mesh.renderOrder = 0;
-    const scaleFactor = 1 / scale;
-    mesh.scale.set(1 * scaleFactor, 1 * scaleFactor, 1 * scaleFactor);
-
-    this.root.add(mesh);
-    this.cssRoot.add(this.canvas);
-
-    this.root.position.set(x, y, z);
-    this.root.setRotationFromEuler(euler);
-    this.root.scale.set(scale, scale, scale);
-
-    this.cssRoot.position.set(x, y, z);
-    this.cssRoot.setRotationFromEuler(euler);
-    this.cssRoot.scale.set(scale, scale, scale);
+    const occulsionPlane = new Mesh(geometry, occlusionMaterial);
+    occulsionPlane.renderOrder = 0;
+    this.cssRoot.add(occulsionPlane);
   }
 
-  init(scene: Scene): void {
-    scene.add(this.root);
-    AnimationLoop.Instance.cssScene.add(this.cssRoot);
+  init(scene: Scene | Object3D): void {
+    scene.add(this.cssRoot);
   }
 
-  update(delta: number): void {}
+  update(_: number): void {}
 }

@@ -1,24 +1,27 @@
-import type { AnimationLoopSubscriber as AnimationLoopSubscriber } from "@/util/AnimationLoop";
+import type { AnimationLoopSubscriber } from "@/util/AnimationLoop";
 import {
   CatmullRomCurve3,
   MathUtils,
   Object3D,
-  PerspectiveCamera,
   Vector3,
   type Scene,
 } from "three";
-import heroToComputer from "@/assets/curves/hero-to-computer.json?raw";
-import { CameraController } from "@/util/CameraController";
+import {
+  CameraController,
+  type CameraBehaviour,
+} from "@/util/CameraController";
+import { curves } from "@/definitions";
 
-export class FollowCurve implements AnimationLoopSubscriber {
-  curve: CatmullRomCurve3 | undefined;
+export class CameraTrack implements AnimationLoopSubscriber, CameraBehaviour {
+  cameraTrackCurve: CatmullRomCurve3 = curves.cameraTrack;
+  focusPoints: CatmullRomCurve3 = curves.focusPoints;
 
   root: Object3D = new Object3D();
   lookAtTarget: (() => Object3D | undefined) | undefined;
   cameraMount: Object3D = new Object3D();
-  dummyPoints: Vector3[] = [];
   loaded: boolean = false;
 
+  currentTarget: Vector3 = new Vector3();
   _t: number = 0;
   get position(): number {
     return this._t;
@@ -27,55 +30,46 @@ export class FollowCurve implements AnimationLoopSubscriber {
     this._t = MathUtils.clamp(t, 0, 1);
   }
 
-  init(scene: Scene): void {
-    const curveData = JSON.parse(heroToComputer);
-    this.curve = this.createCurveFromJSON(curveData);
+  init(_: Scene): void {
+    // const cam = new PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 1000);
+    // this.cameraMount.add(cam);
 
-    const p1 = this.dummyPoints[0];
-    this.cameraMount.position.set(p1.x, p1.y, p1.z);
-
-    const cam = new PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 1000);
-    this.cameraMount.add(cam);
-    CameraController.MainCamera = cam;
-
-    this.root.add(this.cameraMount);
-    scene.add(this.root);
+    // this.root.add(this.cameraMount);
+    // scene.add(this.root);
 
     this.loaded = true;
+    CameraController.CameraBehaviour = this;
   }
 
-  // Ganked code from https://github.com/ClassOutside/Blender_Path_To_ThreeJS/blob/main/src/curveTools/CurveMethods.js
-  createCurveFromJSON(json: {
-    points: Vector3[];
-    closed: boolean;
-  }): CatmullRomCurve3 {
-    const vertices = json.points;
-    const points = [];
+  update(_: number) {}
 
-    for (let i = 0; i < vertices.length; i += 3) {
-      const x = vertices[i].x;
-      const y = vertices[i].y;
-      const z = vertices[i].z;
-      points.push(new Vector3(x, y, z));
+  updateCamera(cameraParent: Object3D, delta: number): void {
+    if (this.cameraTrackCurve) {
+      const point = this.cameraTrackCurve.getPoint(this._t);
+      cameraParent.position.copy(point);
     }
-    this.dummyPoints = points;
-    const curve = new CatmullRomCurve3(points);
-    curve.closed = json.closed;
 
-    return curve;
+    const target =
+      this.focusPoints && this._t !== 0
+        ? this.getLookAtTarget()
+        : this.lookAtTarget?.()?.position;
+    if (target) {
+      this.currentTarget.lerp(target, delta * 3);
+      cameraParent.lookAt(this.currentTarget);
+    }
   }
 
-  update(delta: number): void {
-    const target = this.lookAtTarget?.();
-
-    if (this.curve) {
-      const point = this.curve.getPoint(this._t);
-      this.cameraMount.position.copy(point);
-    }
-
-    if (target?.position) {
-      const t = target.position;
-      CameraController.MainCamera?.lookAt(new Vector3(t.x, t.y, t.z));
-    }
+  //0 -----|------|---------|--------- 1
+  //    pc    cat    arcade   speaker
+  focusThreshholds = [0.3, 0.6, 0.8, 1];
+  // Blender exports path the points in the correct sequence but not the correct start point
+  // offset to get correct start point until we find a better way to store the path data
+  focusPointIndexOffset = 2;
+  getLookAtTarget() {
+    return this.focusPoints.points[
+      (this.focusThreshholds.findIndex((t) => this._t < t) +
+        this.focusPointIndexOffset) %
+        this.focusPoints.points.length
+    ];
   }
 }

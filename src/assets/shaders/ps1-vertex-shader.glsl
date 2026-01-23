@@ -48,15 +48,19 @@ void main() {
 	#include <project_vertex>
 	#include <logdepthbuf_vertex>
 	#include <clipping_planes_vertex>
+
 	// PS1 vertex snapping
 	if (uEnableVertexSnap) {
 		float snap = uVertexSnap;
 		float mouseDist = length((gl_Position.xy / gl_Position.w) - uMousePosition);
-		if (mouseDist < 0.1) {
+		if (length(uMousePosition) != 0.0 && mouseDist < 0.1) {
 			snap *= 10.0;
 			gl_Position.xy = floor(gl_Position.xy / snap) * snap;
 		}
 		else {
+			vec4 worldPosition = modelMatrix * vec4(position, 1.0);
+			float dist = distance(cameraPosition, worldPosition.xyz) / 5.0;
+			snap = min(snap, snap * dist);
 			gl_Position.xy = ceil(gl_Position.xy / snap) * snap;
 		}
 	}

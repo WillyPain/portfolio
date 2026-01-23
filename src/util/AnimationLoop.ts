@@ -8,11 +8,12 @@ import {
 } from "three";
 import { CameraController } from "./CameraController";
 import { CSS2DRenderer, CSS3DRenderer } from "three/examples/jsm/Addons.js";
+import { ref } from "vue";
 
 //todo: cant think of name yet
 export interface AnimationLoopSubscriber {
-  init(scene: Scene): void;
-  update(delta: number): void;
+  init(scene: Scene | Object3D): void;
+  update(delta: number | Object3D): void;
 }
 
 export class AnimationSettings {
@@ -38,7 +39,6 @@ export class AnimationLoop {
     this._css3dRenderer.setSize(window.innerWidth, window.innerHeight);
     this._css3dRenderer.domElement.style.position = "absolute";
     this._css3dRenderer.domElement.style.top = "0";
-    this._css3dRenderer.domElement.id = "css3d";
     // Rendering this behind WebGL so we can achieve occlude effect
     this._css3dRenderer.domElement.style.zIndex = "-1";
 
@@ -61,7 +61,9 @@ export class AnimationLoop {
     this._css2dRenderer.domElement.style.position = "absolute";
     this._css2dRenderer.domElement.style.top = "0";
     this._css2dRenderer.domElement.style.transformStyle = "preserve-3d";
-    this._css2dRenderer.domElement.style.zIndex = "-1";
+    this._css2dRenderer.domElement.style.zIndex = "2";
+    this._css2dRenderer.domElement.hidden = true;
+
     // next the css3d renderer inside the css2d renderer... (this is getting stinky)
   }
 
@@ -87,13 +89,23 @@ export class AnimationLoop {
 
   public static Subscribe(handler: AnimationLoopSubscriber) {
     this.Instance._handlers.push(handler);
+    if (this.Running.value) {
+      handler.init(this.Instance.scene);
+    }
   }
 
   public static Start() {
     this.Instance._start();
   }
 
+  static get Running() {
+    return this.Instance._running;
+  }
+
+  _running = ref(false);
+
   private _start() {
+    this._running.value = true;
     this._clock.start();
     this._handlers.forEach((h) => h.init(this.scene));
     this._renderer.setAnimationLoop(this.update.bind(this));
@@ -109,7 +121,7 @@ export class AnimationLoop {
     camera?.updateMatrix();
     if (camera) {
       this._renderer.render(this.scene, camera);
-      this._css3dRenderer.render(this.cssScene, camera);
+      this._css3dRenderer.render(this.scene, camera);
       this._css2dRenderer.render(this.scene, camera);
     }
   }

@@ -1,79 +1,15 @@
 <template>
   <div
     id="monitor"
-    class="w-[120vh] h-[100vh] overflow-auto text-emerald-300 relative p-50"
+    class="w-[120vh] h-[100vh] overflow-auto bg-black text-emerald-300 relative p-50"
   >
     <div class="scrollTarget"></div>
-    <div class="flex gap-0.5 justify-center">
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-      <scramble-text-label
-        :text="`MODESTY`"
-        color="white"
-      ></scramble-text-label>
-    </div>
     <div class="flex justify-between mt-10">
       <h1 class="pt-1">The Year is 1996...</h1>
       <img width="256" :src="appleJoeCrunchPfp" />
     </div>
 
     <h1 class="mt-5">apple + joe = CRUNCH!</h1>
-    <div class="flex gap-0.5 justify-center">
-      <scramble-text-label
-        :text="`CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER CRUNCH FOREVER `"
-        color="white"
-      ></scramble-text-label>
-    </div>
     <h2 class="mt-1">D d D d Drink it Drinkt it up!</h2>
     <header>
       <h1 id="title">Apple Audit: Final Report</h1>
@@ -146,13 +82,20 @@
 </template>
 
 <script setup lang="ts">
-import ScrambleTextLabel from "./ScrambleTextLabel.vue";
 import appleJoeCrunchPfp from "@/assets/Images/apple-joe-crunch.png?url";
 import appleGif from "@/assets/Images/apple-sparkle.gif?url";
 import eyeGif from "@/assets/Images/eye.gif?url";
+import { MonitorBuilder } from "@/scene/MonitorBuilder";
+import { AnimationLoop } from "@/util/AnimationLoop";
+import { onMounted } from "vue";
+
+onMounted(() => {
+  const arcade = new MonitorBuilder("computer_screen");
+  AnimationLoop.Subscribe(arcade);
+});
 </script>
 
-<style>
+<style scoped>
 scramble-text-label {
   background: blue;
 }

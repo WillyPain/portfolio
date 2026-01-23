@@ -111,3 +111,7 @@
 ## https://kprverse.com/
 
 - wow wow
+
+## https://www.youtube.com/shorts/U55lIUMpy70?feature=share
+
+- is time

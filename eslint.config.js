@@ -23,6 +23,7 @@ export default typescriptEslint.config(
     },
     rules: {
       // your rules
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
     },
   },
   eslintConfigPrettier

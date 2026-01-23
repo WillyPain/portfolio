@@ -7,14 +7,22 @@ import {
   KeepStencilOp,
   Mesh,
   NearestFilter,
+  NoColorSpace,
+  Object3D,
   ReplaceStencilOp,
+  Texture,
   type Scene,
 } from "three";
 import { type GLTF } from "three/examples/jsm/Addons.js";
 import ps1VertexShader from "@/assets/shaders/ps1-vertex-shader.glsl?raw";
 import ps1FragmentShader from "@/assets/shaders/ps1-fragment-shader.glsl?raw";
 import { ResourceLoader } from "@/util/ResourceLoader";
-import { Ps1ShaderUniforms, type ThreeShader } from "@/definitions";
+import {
+  Ps1ShaderUniforms,
+  ResourceUrls,
+  type ThreeShader,
+} from "@/definitions";
+import { SceneTracker } from "@/util/SceneTracker";
 
 export class Ps1Glb implements AnimationLoopSubscriber {
   loaded: boolean = false;
@@ -40,26 +48,42 @@ export class Ps1Glb implements AnimationLoopSubscriber {
     }
   }
 
-  init(scene: Scene): void {
+  init(scene: Scene | Object3D): void {
     this.loaded = true;
-    this.root = ResourceLoader.Get<GLTF>(this.modelUrl);
+    this.root = SceneTracker.Load(this.modelUrl);
     scene.add(this.root.scene);
     // add ps1 style affine shader to all materials
     this.root.scene.traverse((child) => {
       if (child instanceof Mesh) {
-        const t = child.material.map;
-        if (t == null) return;
-        // Make them textures crispy
-        t.generateMipmaps = false;
-        t.magFilter = NearestFilter;
-        t.minFilter = NearestFilter;
-        t.wraps = ClampToEdgeWrapping;
-        t.wrapT = ClampToEdgeWrapping;
-        t.anisotropy = 1;
+        if (child.name.startsWith("layer")) {
+          return;
+        }
+        if (child.material.map) {
+          // Make them textures crispy
+          child.material.map.generateMipmaps = false;
+          child.material.map.magFilter = NearestFilter;
+          child.material.map.minFilter = NearestFilter;
+          child.material.map.wraps = ClampToEdgeWrapping;
+          child.material.map.wrapT = ClampToEdgeWrapping;
+          child.material.map.anisotropy = 1;
+        }
+
+        child.material.lightMap = ResourceLoader.Get<Texture>(
+          ResourceUrls.cribLightmap
+        );
+
+        if (child.geometry.attributes.uv1) {
+          child.material.lightMapIntensity = 5;
+          child.material.lightMap.encoding = NoColorSpace;
+          child.material.lightMap.flipY = false;
+          child.material.lightMap.channel = 1;
+          child.material.needsUpdate = true;
+          child.material.color.setScalar(1.0);
+        }
 
         child.material.stencilRef = 2;
         child.material.stencilWrite = true;
-        child.material.stencilFunc = EqualStencilFunc; // test function
+        child.material.stencilFunc = EqualStencilFunc;
         child.material.stencilFail = KeepStencilOp;
         child.material.stencilZFail = KeepStencilOp;
         child.material.stencilZPass = ReplaceStencilOp;
@@ -91,12 +115,11 @@ export class Ps1Glb implements AnimationLoopSubscriber {
   }
 
   accumulator = 0;
+  tick = 1 / 24;
   update(delta: number): void {
     if (!this.loaded) return;
-    //todo: try find way to avoid calculating tick size every frame
-    const tick = 1 / 24;
     this.accumulator += delta;
-    if (this.accumulator > tick && true) {
+    if (this.accumulator > this.tick && true) {
       this.mixer?.update(this.accumulator);
       this.accumulator = 0;
     }

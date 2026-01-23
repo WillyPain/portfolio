@@ -7,9 +7,9 @@ void main() {
     vec3 V = normalize(dist);
 
     float angleRatio = abs(dot(V, N));
-    float steepening = 10.0 / (1.0 / length(dist));
+    float steepening = 5.0 / (1.0 / length(dist));
     
-    float visibility = max(pow(steepening, angleRatio) / steepening, 0.4);
+    float visibility = max(pow(steepening, angleRatio) / steepening, 0.2);
     
-    gl_FragColor = vec4(0, 0, 0, 1.0 - visibility);
+    gl_FragColor = vec4(0.05, 0.05, 0.1, 1.0 - visibility);
 }

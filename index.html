@@ -17,24 +17,24 @@
       crossorigin="anonymous" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Will Payne - Portfolio 2025</title>
+    <style>
+      @keyframes blink {
+        0%, 50% { visibility: visible; }
+        51%, 100% { visibility: hidden; }
+      }
+    </style>
   </head>
-  <body style="background: black;">
-    <div id="splash" class="fixed inset-0 flex justify-center items-center">
-      <div class="flex flex-col items-center space-y-4">
-        <p class="text-white text-4xl font-mono">welcome to apple heaven</p>
-        <p class="text-white text-xl font-mono">loading…</p>
+  <body style="background: black; margin: 0; place-items: center;">
+    <div id="cursor-container" style="color:white; width: 100vw; max-width: 1800px; margin: 0 auto">
+      <div id="cursor" style="font-size: 24px; color:white; padding-top: 3.75rem; padding-inline: 12rem; animation: blink 0.5s steps(1) infinite;">
+        _
       </div>
     </div>
     <div class="w-screen h-screen" id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-    <script>
-      // Hide splash once app is ready
-      window.addEventListener('load', () => {
-        const splash = document.getElementById('splash');
-        splash.style.transition = 'opacity 0.5s ease';
-        splash.style.opacity = 0;
-        setTimeout(() => splash.remove(), 500);
-      });
+    <script id="cursor-animator">
+
     </script>
+    <script type="module" src="/src/main.ts"></script>
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
   </body>
 </html>

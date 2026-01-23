@@ -1,9 +1,9 @@
 import {
-  ResourceTypes,
+  ResourceTypes as ResourceType,
   type MediaResource,
   type ResourceEntry,
 } from "@/definitions";
-import { Group, SRGBColorSpace, TextureLoader } from "three";
+import { AudioLoader, Group, SRGBColorSpace, TextureLoader } from "three";
 import {
   GLTFLoader,
   SkeletonUtils,
@@ -11,6 +11,7 @@ import {
 } from "three/examples/jsm/Addons.js";
 
 type DownloadedCallback = () => void;
+
 class ResourceBatch {
   priority: number;
   resourceEntry: ResourceEntry[];
@@ -37,6 +38,12 @@ export class ResourceLoader {
     return (this._instance ??= new ResourceLoader());
   }
 
+  progressEventListeners: ((
+    fileId: string,
+    loaded: number,
+    total: number
+  ) => void)[] = [];
+
   Enqueue(
     priority: number = Number.MAX_SAFE_INTEGER,
     cb?: DownloadedCallback,
@@ -58,51 +65,56 @@ export class ResourceLoader {
   LoadResources() {
     const gltfLoader = new GLTFLoader();
     const textureLoader = new TextureLoader();
+    const audioLoader = new AudioLoader();
+
     // Sort downloadQueue by priority
     this.downloadQueue.sort((a, b) => a.priority - b.priority);
 
     // Can trigger some events here for starting and finishing loading
     while (this.downloadQueue.length > 0) {
       const batch = this.downloadQueue.shift();
+
       if (!batch) continue;
 
       for (const resourceEntry of batch.resourceEntry) {
+        const onDownload = (resource: MediaResource | null) => {
+          this.OnDownloaded(resourceEntry.url, resource);
+          batch.cb?.();
+        };
+
+        const onProgress = (event: ProgressEvent) => {
+          this.progressEventListeners.forEach((pel) =>
+            pel(resourceEntry.url, event.loaded, event.total)
+          );
+        };
+
         switch (resourceEntry.type) {
-          case ResourceTypes.GLTF:
-            gltfLoader.load(resourceEntry.url, (file) => {
-              this.OnDownloaded(resourceEntry.url, file);
-              batch.cb?.();
-            });
+          case ResourceType.GLTF:
+            gltfLoader.load(resourceEntry.url, onDownload, onProgress);
             break;
 
-          case ResourceTypes.Video: {
-            const video = document.createElement<"video">("video");
-            video.src = resourceEntry.url;
-            video.preload = "auto";
-            video.crossOrigin = "anonymous";
-            video.loop = true;
-            video.muted = true;
-
-            video.addEventListener("canplay", () => {
-              this.OnDownloaded(resourceEntry.url, video);
-              batch.cb?.();
-            });
-
-            video.addEventListener("error", () => {
-              console.error(`Failed to load video: ${resourceEntry.url}`);
-              batch.cb?.();
-            });
-
-            video.load();
+          case ResourceType.Video: {
+            this.downloadVideo(resourceEntry.url, onDownload, onProgress);
             break;
           }
-          case ResourceTypes.Texture:
-            textureLoader.load(resourceEntry.url, (texture) => {
-              texture.colorSpace = SRGBColorSpace;
-              texture.needsUpdate = true;
-              this.OnDownloaded(resourceEntry.url, texture);
-              batch.cb?.();
-            });
+
+          case ResourceType.Texture:
+            textureLoader.load(
+              resourceEntry.url,
+              (texture) => {
+                texture.colorSpace = SRGBColorSpace;
+                texture.needsUpdate = true;
+                onDownload(texture);
+              },
+              onProgress,
+              (e) => {
+                console.log(e);
+              }
+            );
+            break;
+
+          case ResourceType.Audio:
+            audioLoader.load(resourceEntry.url, onDownload, onProgress);
             break;
 
           default:
@@ -133,4 +145,51 @@ export class ResourceLoader {
     }
     return resource as T;
   }
+
+  downloadVideo(
+    url: string,
+    onDownloaded?: (media: MediaResource | null) => void,
+    onProgress?: (event: ProgressEvent) => void
+  ) {
+    fetch(url).then(async (response) => {
+      const contentLength = response.headers.get("content-length");
+      const total = contentLength ? parseInt(contentLength, 10) : 0;
+      let loaded = 0;
+
+      const reader = response.body!.getReader();
+      const chunks: BlobPart[] = [];
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) {
+          const url = URL.createObjectURL(new Blob(chunks));
+          const video = document.createElement<"video">("video");
+          video.src = url;
+          video.preload = "auto";
+          video.crossOrigin = "anonymous";
+          video.loop = true;
+          video.muted = true;
+
+          video.addEventListener("canplay", () => {
+            onDownloaded?.(video);
+          });
+
+          video.load();
+          return video;
+        }
+
+        chunks.push(value);
+        loaded += value.length;
+        onProgress?.({
+          loaded,
+          total,
+        });
+      }
+    });
+  }
+}
+// utils/fetchWithProgress.ts
+interface ProgressEvent {
+  loaded: number;
+  total: number;
 }
